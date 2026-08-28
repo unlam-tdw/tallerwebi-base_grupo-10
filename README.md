@@ -66,9 +66,10 @@ El clon **no trae** `node_modules`, ni la hoja de estilos `dist/main.css` (ignor
 ```powershell
 npm run dev
 ```
-Levanta MySQL (docker), compila los estilos y arranca Jetty con hot-reload:
-Java/Thymeleaf se actualizan solos (scan 2s). En el primer arranque instala las
-dependencias del frontend solo. Frena con `Ctrl+C` (apaga Jetty y MySQL).
+Levanta MySQL (docker), compila los estilos y arranca Jetty:
+**las plantillas Thymeleaf se actualizan con solo refrescar (F5)** — los cambios en
+Java requieren reiniciar con `Ctrl+C` y volver a correr `npm run dev`. En el primer
+arranque instala las dependencias del frontend solo. Frena con `Ctrl+C` (apaga Jetty y MySQL).
 
 > Estilos: se compilan frescos en cada arranque. Si estás trabajando sobre
 > estilos en vivo, corré el watch aparte en otra terminal:

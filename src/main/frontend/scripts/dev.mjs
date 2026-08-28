@@ -94,7 +94,7 @@ async function main() {
   console.log("==> 3/4 CSS inicial (npm run build)");
   await ejecutarYEsperar(NPM, ["run", "build"], FRONTEND);
 
-  console.log("==> 4/4 Jetty con hot-reload (Java/Thymeleaf)");
+  console.log("==> 4/4 Jetty listo — plantillas Thymeleaf en vivo (F5). Java requiere reiniciar.");
   const jetty = correr(MVN, ["jetty:run"], ROOT);
 
   jetty.on("exit", (code) => {

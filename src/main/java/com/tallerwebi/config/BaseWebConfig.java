@@ -44,9 +44,9 @@ public abstract class BaseWebConfig implements WebMvcConfigurer {
     templateResolver.setSuffix(".html");
     // HTML is the default value, added here for the sake of clarity.
     templateResolver.setTemplateMode(TemplateMode.HTML);
-    // Template cache is true by default. Set to false if you want
-    // templates to be automatically updated when modified.
-    templateResolver.setCacheable(true);
+    // Template cache is off so template edits appear on refresh (F5) without
+    // restarting the server. This is the dev-friendly default for a taller.
+    templateResolver.setCacheable(false);
     return templateResolver;
   }
 
