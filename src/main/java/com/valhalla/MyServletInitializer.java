@@ -10,13 +10,13 @@ public class MyServletInitializer extends AbstractAnnotationConfigDispatcherServ
   // services and data sources
   @Override
   protected Class<?>[] getRootConfigClasses() {
-    return new Class[0];
+    return new Class<?>[0];
   }
 
   // controller, view resolver, handler mapping
   @Override
   protected Class<?>[] getServletConfigClasses() {
-    return new Class[] {
+    return new Class<?>[] {
       SpringWebConfig.class,
       JpaConfig.class,
       DatabaseInitializationConfig.class,

@@ -223,6 +223,10 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
+                    <!-- Load Mockito as a real agent so it stops self-attaching and
+                         stops warning about dynamic agent loading. @{argLine} keeps
+                         the JaCoCo agent injected by prepare-agent. -->
+                    <argLine>@{argLine} -Xshare:off -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</argLine>
                 </configuration>
             </plugin>
 
@@ -265,8 +269,6 @@
                 <configuration>
                     <!-- Location of the custom config file (Google Style based but Prettier-friendly) -->
                     <configLocation>${project.basedir}/checkstyle-base.xml</configLocation>
-                    <!-- Checkstyle runtime version (Java 25 / JEP 512 support) -->
-                    <checkstyleVersion>${checkstyle.runtime.version}</checkstyleVersion>
                     <!-- Print style rule violations directly to the console -->
                     <consoleOutput>true</consoleOutput>
                     <!-- Fail the build on any style rule violation -->

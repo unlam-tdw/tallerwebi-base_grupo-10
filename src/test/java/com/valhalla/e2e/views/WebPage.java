@@ -27,7 +27,7 @@ public class WebPage {
   }
 
   protected void typeIntoElement(String cssSelector, String text) {
-    this.getElement(cssSelector).type(text);
+    this.getElement(cssSelector).fill(text);
   }
 
   private Locator getElement(String cssSelector) {
