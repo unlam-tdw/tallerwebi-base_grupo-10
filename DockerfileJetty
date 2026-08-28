@@ -1,3 +1,29 @@
+# =============================================================
+# Etapa 1: compila el WAR (incluye el build del frontend via
+# frontend-maven-plugin en prepare-package)
+# =============================================================
+FROM eclipse-temurin:25-jdk AS build
+
+ENV MAVEN_VERSION=3.9.9
+ENV MAVEN_HOME=/opt/maven
+
+RUN apt-get update && apt-get install -y wget && \
+    wget https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O maven.tar.gz && \
+    tar -xzvf maven.tar.gz -C /opt && mv /opt/apache-maven-${MAVEN_VERSION} $MAVEN_HOME && \
+    rm maven.tar.gz && \
+    apt-get remove -y wget && apt-get autoremove -y
+
+ENV PATH="$MAVEN_HOME/bin:$PATH"
+
+WORKDIR /workspace
+COPY . .
+
+# -DskipTests: los tests corren en CI; el build de la imagen queda rapido y liviano
+RUN mvn -q -DskipTests package
+
+# =============================================================
+# Etapa 2: imagen runtime con Jetty
+# =============================================================
 FROM eclipse-temurin:25-jdk
 
 ENV JETTY_VERSION=12.0.37
@@ -10,7 +36,7 @@ RUN apt-get update && apt-get install -y wget && \
     rm jetty.tar.gz && \
     cd $JETTY_HOME && echo "y" | java -jar start.jar --add-modules=server,http,deploy,ee10-deploy,ee10-webapp,ee10-servlet,ee10-annotations,ee10-jsp
 
-COPY target/tallerwebi-base-1.0-SNAPSHOT.war $JETTY_HOME/webapps/spring.war
+COPY --from=build /workspace/target/tallerwebi-base-1.0-SNAPSHOT.war $JETTY_HOME/webapps/spring.war
 
 EXPOSE 8080
 

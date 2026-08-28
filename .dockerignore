@@ -1,0 +1,12 @@
+.git/
+.idea/
+.vscode/
+*.iml
+
+target/
+.calidad-de-codigo/
+.atl/
+openspec/
+
+**/node_modules/
+src/main/webapp/resources/core/dist/
