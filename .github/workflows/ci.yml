@@ -47,3 +47,76 @@ jobs:
 
       - name: Build styles (Vite + Tailwind)
         run: npm run build
+
+  e2e:
+    name: E2E (Playwright against a running Jetty + MySQL)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: tallerwebi
+          MYSQL_USER: user
+          MYSQL_PASSWORD: user
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u user -puser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
+
+      - name: Install Playwright Chromium
+        run: |
+          mvn -q exec:java -e \
+            -Dexec.mainClass=com.microsoft.playwright.CLI \
+            -Dexec.args="install chromium"
+
+      - name: Package app (skip tests; they run in the backend job)
+        run: |
+          mvn -q package -DskipTests
+
+      - name: Start Jetty against local MySQL
+        env:
+          DB_HOST: localhost
+          DB_PORT: "3306"
+          DB_NAME: tallerwebi
+          DB_USER: user
+          DB_PASSWORD: user
+        run: |
+          mvn jetty:run > /tmp/jetty.log 2>&1 &
+          echo "Jetty starting in background"
+
+      - name: Wait for the app to respond
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/spring/login > /dev/null; then
+              echo "App is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "App did not start in time" >&2
+          cat /tmp/jetty.log >&2
+          exit 1
+
+      - name: Run E2E tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: "3306"
+          DB_NAME: tallerwebi
+          DB_USER: user
+          DB_PASSWORD: user
+        run: |
+          mvn -q test -Dtest=LoginViewE2E
