@@ -478,6 +478,16 @@
                 <version>12.0.37</version>
                 <configuration>
                     <scan>2</scan>
+                    <!-- El scan por defecto solo mira target/classes; sin esto,
+                         los cambios en plantillas Thymeleaf NO disparan redeploy. -->
+                    <scanTargetPatterns>
+                        <scanTargetPattern>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/*.html</include>
+                            </includes>
+                        </scanTargetPattern>
+                    </scanTargetPatterns>
                     <httpConnector>
                         <port>8080</port>
                     </httpConnector>
