@@ -4,6 +4,9 @@
   "description": "Estilos del frontend (CSS-only): Vite + Tailwind como herramientas de build-time; toda la lógica vive en Java",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "vite build",
     "dev": "node scripts/dev.mjs"
