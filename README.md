@@ -333,6 +333,30 @@ Remove-Item -Recurse -Force .calidad-de-codigo/jacoco; mvn clean test
 rd /s /q .calidad-de-codigo\jacoco & mvn clean test
 ```
 
+## Estructura del proyecto
+
+```
+src/main/java/com/tallerwebi/
+├── config/           # Configuración de Spring (web, JPA, seguridad, validación, entorno)
+├── dominio/          # Lógica de negocio (servicios, modelos, excepciones)
+├── infraestructura/  # Persistencia (repositorios Spring Data JPA)
+└── presentacion/     # Controladores MVC, DTOs y manejo global de excepciones
+
+src/main/webapp/
+├── WEB-INF/views/thymeleaf/   # Plantillas Thymeleaf (fragments + vistas)
+└── resources/core/dist/       # CSS compilado (Vite + Tailwind) — ignorado por git
+
+src/main/frontend/     # Build de estilos (Vite + Tailwind, CSS-only)
+src/test/java/         # Pruebas unitarias e de integración (JUnit, MockMvc, JPA, Playwright)
+
+docker-compose.yml    # Stack local: mysql (dev) + jetty-app (app dockerizada)
+DockerfileJetty       # Imagen Jetty multi-stage (compila el WAR dentro de la imagen)
+DockerfileSQL         # Imagen MySQL (schema + seed los inicializa la app al bootear)
+```
+
+**Regla de oro:** el frontend SOLO renderiza con Thymeleaf + Tailwind; TODA la lógica
+de negocio vive en Java (dominio/servicios).
+
 ## Tecnologías:
 * Docker
 * Java 25 (LTS)
