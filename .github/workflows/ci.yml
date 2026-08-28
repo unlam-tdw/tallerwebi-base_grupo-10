@@ -24,7 +24,7 @@ jobs:
       - run: echo "🖥️ The workflow is ready to test the code"
       - name: Running the tests
         run: |
-          mvn clean test
+          mvn clean verify --fail-at-end
       - run: echo "🍏 The job status is ${{ job.status }}."
       - name: Install node packages
         run: |
