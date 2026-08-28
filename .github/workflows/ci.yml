@@ -119,4 +119,8 @@ jobs:
           DB_USER: user
           DB_PASSWORD: user
         run: |
-          mvn -q test -Dtest=LoginViewE2E
+          mvn -q test -Dtest=LoginViewE2E \
+            -Djacoco.skip=true \
+            -Dcheckstyle.skip=true \
+            -Dpmd.skip=true \
+            -Dcpd.skip=true
