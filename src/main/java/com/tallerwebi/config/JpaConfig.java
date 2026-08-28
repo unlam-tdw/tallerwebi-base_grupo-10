@@ -26,7 +26,7 @@ public class JpaConfig extends BaseJpaConfig {
     properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
     properties.setProperty("hibernate.show_sql", "true");
     properties.setProperty("hibernate.format_sql", "true");
-    properties.setProperty("hibernate.hbm2ddl.auto", "create");
+    properties.setProperty("hibernate.hbm2ddl.auto", "update");
     properties.setProperty("hibernate.connection.characterEncoding", "utf8");
     properties.setProperty("hibernate.connection.CharSet", "utf8");
     properties.setProperty("hibernate.connection.useUnicode", "true");

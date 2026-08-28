@@ -1,1 +1,1 @@
-INSERT INTO users(id, email, password, role, active) VALUES(null, 'test@unlam.edu.ar', '$2a$10$ShOBUPfT5jLImCcQoWkM6edIQ3xjC6XYzgC7RDOPLqGiTRgHMkh2K', 'ADMIN', true);
+INSERT IGNORE INTO users(id, email, password, role, active) VALUES(null, 'test@unlam.edu.ar', '$2a$10$ShOBUPfT5jLImCcQoWkM6edIQ3xjC6XYzgC7RDOPLqGiTRgHMkh2K', 'ADMIN', true);
