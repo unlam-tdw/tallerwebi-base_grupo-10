@@ -24,3 +24,10 @@ hs_err_pid*
 
 # Reportes de codigo limpio y cobertura de pruebas
 .calidad-de-codigo/
+
+.atl
+openspec
+
+# Frontend (Vite) build output y dependencias locales
+src/main/frontend/node_modules/
+src/main/webapp/resources/core/dist/

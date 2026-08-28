@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/*
+  Tailwind v4 detecta el contenido dentro del workspace, pero las plantillas
+  Thymeleaf viven fuera (src/main/webapp/WEB-INF/views/thymeleaf). Se declaran
+  con @source para que sus clases utilitarias también se generen.
+*/
+@source "../../../webapp/WEB-INF/views/thymeleaf/";
