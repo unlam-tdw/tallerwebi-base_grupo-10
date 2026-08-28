@@ -7,7 +7,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.valhalla.domain.exception.UserAlreadyExists;
 import com.valhalla.infrastructure.UserRepository;
@@ -38,6 +41,7 @@ public class LoginServiceTest {
     String password = "password123";
     User expectedUser = new User();
     expectedUser.setEmail(email);
+    expectedUser.setActive(true);
     expectedUser.setPassword(passwordEncoder.encode(password));
     when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(expectedUser));
 
@@ -55,11 +59,29 @@ public class LoginServiceTest {
     String email = "test@test.com";
     User expectedUser = new User();
     expectedUser.setEmail(email);
+    expectedUser.setActive(true);
     expectedUser.setPassword(passwordEncoder.encode("correctPassword"));
     when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(expectedUser));
 
     // when
     User actualUser = this.loginService.findUser(email, "wrongPassword");
+
+    // then
+    assertThat(actualUser, is(nullValue()));
+  }
+
+  @Test
+  public void shouldReturnNullWhenUserIsNotActive() {
+    // given
+    String email = "test@test.com";
+    User inactiveUser = new User();
+    inactiveUser.setEmail(email);
+    inactiveUser.setActive(false);
+    inactiveUser.setPassword(passwordEncoder.encode("password123"));
+    when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(inactiveUser));
+
+    // when
+    User actualUser = this.loginService.findUser(email, "password123");
 
     // then
     assertThat(actualUser, is(nullValue()));
@@ -79,37 +101,34 @@ public class LoginServiceTest {
   }
 
   @Test
-  public void shouldSaveUserWithEncryptedPasswordWhenNotRegistered() {
+  public void shouldSaveNewUserWithDefaultsAndEncryptedPasswordWhenNotRegistered() {
     // given
     String email = "new@test.com";
     String password = "password123";
-    User user = new User();
-    user.setEmail(email);
-    user.setPassword(password);
     when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.empty());
 
     // when
-    this.loginService.register(user);
+    this.loginService.register(email, password);
 
     // then
     ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
     verify(this.userRepositoryMock, times(1)).save(captor.capture());
     User saved = captor.getValue();
-    assertThat(this.passwordEncoder.matches(password, saved.getPassword()), is(true));
+    assertThat(saved.getEmail(), is(equalTo(email)));
+    assertThat(saved.getRole(), is(equalTo("USER")));
+    assertThat(saved.getActive(), is(true));
     assertThat(saved.getPassword(), not(equalTo(password)));
+    assertThat(this.passwordEncoder.matches(password, saved.getPassword()), is(true));
   }
 
   @Test
   public void shouldThrowWhenUserAlreadyExists() {
     // given
     String email = "exists@test.com";
-    User user = new User();
-    user.setEmail(email);
-    user.setPassword("password123");
     when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(new User()));
 
     // when and then
-    assertThrows(UserAlreadyExists.class, () -> this.loginService.register(user));
+    assertThrows(UserAlreadyExists.class, () -> this.loginService.register(email, "password123"));
     verify(this.userRepositoryMock, times(0)).save(any(User.class));
   }
 
@@ -122,12 +141,11 @@ public class LoginServiceTest {
     existing.setPassword(passwordEncoder.encode("existingPassword"));
     when(this.userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(existing));
 
-    User newUser = new User();
-    newUser.setEmail(email);
-    newUser.setPassword("differentPassword");
-
     // when and then: signup is rejected because the email already exists
-    assertThrows(UserAlreadyExists.class, () -> this.loginService.register(newUser));
+    assertThrows(
+      UserAlreadyExists.class,
+      () -> this.loginService.register(email, "differentPassword")
+    );
     verify(this.userRepositoryMock, times(0)).save(any(User.class));
   }
 }

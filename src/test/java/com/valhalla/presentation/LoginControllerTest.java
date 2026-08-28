@@ -1,10 +1,18 @@
 package com.valhalla.presentation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.valhalla.domain.LoginService;
 import com.valhalla.domain.User;
@@ -51,13 +59,14 @@ public class LoginControllerTest {
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Invalid email or password")
     );
-    verify(sessionMock, times(0)).setAttribute("ROLE", "ADMIN");
+    verify(sessionMock, times(0)).setAttribute(anyString(), any());
   }
 
   @Test
-  public void shouldGoToHomeWhenCredentialsAreCorrect() {
+  public void shouldGoToHomeAndStoreSessionWhenCredentialsAreCorrect() {
     // given
     User foundUserMock = mock(User.class);
+    when(foundUserMock.getEmail()).thenReturn("dami@unlam.com");
     when(foundUserMock.getRole()).thenReturn("ADMIN");
 
     when(requestMock.getSession()).thenReturn(sessionMock);
@@ -70,7 +79,11 @@ public class LoginControllerTest {
 
     // then
     assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/home"));
-    verify(sessionMock, times(1)).setAttribute("ROLE", foundUserMock.getRole());
+    ArgumentCaptor<UserSession> captor = ArgumentCaptor.forClass(UserSession.class);
+    verify(sessionMock, times(1))
+      .setAttribute(eq(SessionInterceptor.USER_SESSION), captor.capture());
+    assertThat(captor.getValue().getEmail(), equalToIgnoringCase("dami@unlam.com"));
+    assertThat(captor.getValue().getRole(), equalToIgnoringCase("ADMIN"));
   }
 
   @Test
@@ -103,10 +116,7 @@ public class LoginControllerTest {
 
     // then
     assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/login"));
-    ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-    verify(loginServiceMock, times(1)).register(captor.capture());
-    assertThat(captor.getValue().getEmail(), equalToIgnoringCase("dami@unlam.com"));
-    assertThat(captor.getValue().getPassword(), equalToIgnoringCase("123456"));
+    verify(loginServiceMock, times(1)).register("dami@unlam.com", "123456");
   }
 
   @Test
@@ -128,32 +138,32 @@ public class LoginControllerTest {
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Invalid registration data")
     );
-    verify(loginServiceMock, times(0)).register(any(User.class));
+    verify(loginServiceMock, times(0)).register(anyString(), anyString());
   }
 
   @Test
   public void shouldPropagateExceptionWhenEmailAlreadyExists() {
     // given: the service throws UserAlreadyExists (handled by @ControllerAdvice)
-    doThrow(UserAlreadyExists.class).when(loginServiceMock).register(any(User.class));
+    doThrow(UserAlreadyExists.class).when(loginServiceMock).register(anyString(), anyString());
+
+    // when and then
     BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(
       newUserData,
       "newUserData"
     );
-
-    // when and then
     assertThrows(UserAlreadyExists.class, () -> controller.register(newUserData, bindingResult));
   }
 
   @Test
   public void shouldPropagateExceptionOnUnexpectedRegistrationError() {
     // given: unexpected service error (handled by @ControllerAdvice)
-    doThrow(new RuntimeException()).when(loginServiceMock).register(any(User.class));
+    doThrow(new RuntimeException()).when(loginServiceMock).register(anyString(), anyString());
+
+    // when and then
     BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(
       newUserData,
       "newUserData"
     );
-
-    // when and then
     assertThrows(RuntimeException.class, () -> controller.register(newUserData, bindingResult));
   }
 
@@ -178,12 +188,55 @@ public class LoginControllerTest {
   }
 
   @Test
-  public void shouldReturnHomeView() {
+  public void shouldReturnHomeViewWithUserWhenSessionExists() {
+    // given
+    UserSession sessionUser = new UserSession("dami@unlam.com", "ADMIN");
+    when(sessionMock.getAttribute(SessionInterceptor.USER_SESSION)).thenReturn(sessionUser);
+
     // when
-    ModelAndView modelAndView = controller.showHome();
+    ModelAndView modelAndView = controller.showHome(sessionMock);
 
     // then
     assertThat(modelAndView.getViewName(), equalToIgnoringCase("home"));
+    assertThat(modelAndView.getModel().get("user"), equalTo(sessionUser));
+  }
+
+  @Test
+  public void shouldRedirectToLoginWhenNoSessionUser() {
+    // given
+    when(sessionMock.getAttribute(SessionInterceptor.USER_SESSION)).thenReturn(null);
+
+    // when
+    ModelAndView modelAndView = controller.showHome(sessionMock);
+
+    // then
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/login"));
+  }
+
+  @Test
+  public void shouldInvalidateSessionAndRedirectToLoginOnLogout() {
+    // given
+    when(requestMock.getSession(false)).thenReturn(sessionMock);
+
+    // when
+    ModelAndView modelAndView = controller.logout(requestMock);
+
+    // then
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/login"));
+    verify(sessionMock, times(1)).invalidate();
+  }
+
+  @Test
+  public void shouldRedirectToLoginOnLogoutWhenNoSession() {
+    // given
+    when(requestMock.getSession(false)).thenReturn(null);
+
+    // when
+    ModelAndView modelAndView = controller.logout(requestMock);
+
+    // then
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/login"));
+    verify(sessionMock, times(0)).invalidate();
   }
 
   @Test

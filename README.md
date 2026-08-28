@@ -311,13 +311,16 @@ Automatically formats Java code so it complies with the style rules.
 The frontend is limited to styles (CSS): there is no JavaScript or TypeScript linter, since the client does not run its own logic (everything lives in Java). The only frontend task is `npm run build` (Vite + Tailwind), which generates the `main.css` stylesheet from `src/main/frontend`. Unlike Prettier, Checkstyle, PMD, CPD and JaCoCo, it runs with npm and not in the Maven phases.
 
 ### JaCoCo (Code Coverage)
-Measures what percentage of the source code is covered by the unit tests.
+Measures what percentage of the source code is covered by the tests.
 * **Runs in:** `test` phase.
-* **Configuration:** Requires a minimum of 80% line coverage (excluding configurations).
+* **Configuration:** per-package gates — `domain` and `presentation` must reach
+  **100%** line coverage, `infrastructure` **80%**, plus an **80%** global floor
+  so future packages can't silently go untested. `config`, the JPA entity and
+  the DTOs are excluded (pure boilerplate: constructors/getters/setters).
 * **Commands:**
   * `mvn jacoco:report`: Generates the visual report at `.code-quality/jacoco/index.html`.
 * **Reports:** All results (binary and HTML) are saved in the `.code-quality/jacoco/` folder at the project root.
-* **Failure example:** If the tests cover less than 80% of the business logic lines, the build fails during verification.
+* **Failure example:** If the tests cover less than the required line coverage per package, the build fails during verification.
 * **Documentation:** [JaCoCo Official Site](https://www.jacoco.org/jacoco/)
 
 #### Command to generate a fresh report:
@@ -345,7 +348,7 @@ src/main/java/com/valhalla/
 ├── config/           # Spring configuration (web, JPA, security, validation, environment)
 ├── domain/           # Business logic (services, models, exceptions)
 ├── infrastructure/   # Persistence (Spring Data JPA repositories)
-└── presentation/     # MVC controllers, DTOs and global exception handling
+└── presentation/     # MVC controllers, DTOs, session interceptor and global exception handling
 
 src/main/webapp/
 ├── WEB-INF/views/thymeleaf/   # Thymeleaf templates (fragments + views)
@@ -353,11 +356,22 @@ src/main/webapp/
 
 src/main/frontend/     # Style build (Vite + Tailwind, CSS-only)
 src/test/java/         # Unit and integration tests (JUnit, MockMvc, JPA, Playwright)
-
 docker-compose.yml    # Local stack: mysql (dev) + jetty-app (dockerized app)
 DockerfileJetty       # Jetty multi-stage image (compiles the WAR inside the image)
 DockerfileSQL         # MySQL image (schema + seed initialized by the app at boot)
 ```
+
+**Authentication:** session-based. On successful login the controller maps the
+domain `User` to a `UserSession` DTO (email + role) and stores it in the HTTP
+session. `SessionInterceptor` guards `/home` (redirects to `/login` if no
+session), and `POST /logout` invalidates the session. New registrations get
+`role = USER` and `active = true`; inactive users cannot log in.
+
+**Test conventions:** integration tests use the composed annotations
+`@WebIntegrationTest` (MockMvc web + in-memory HSQLDB) and `@JpaIntegrationTest`
+(persistence only) instead of repeating the Spring `@ContextConfiguration`
+setup. Repository JPA tests use HSQLDB; only the `DataSource` and dialect
+differ from production.
 
 **Golden rule:** the frontend ONLY renders with Thymeleaf + Tailwind; ALL business
 logic lives in Java (domain/services).

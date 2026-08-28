@@ -1,31 +1,29 @@
 package com.valhalla.integration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import com.valhalla.config.JpaTestConfig;
 import com.valhalla.domain.LoginService;
-import com.valhalla.domain.User;
 import com.valhalla.infrastructure.UserRepository;
-import com.valhalla.integration.config.SpringWebTestConfig;
+import com.valhalla.presentation.SessionInterceptor;
+import com.valhalla.presentation.UserSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = { SpringWebTestConfig.class, JpaTestConfig.class })
+@WebIntegrationTest
 public class LoginControllerTest {
 
   private static final String LOGIN_EMAIL = "login@unlam.edu.ar";
@@ -53,10 +51,7 @@ public class LoginControllerTest {
   public void setUp() {
     this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     if (userRepository.findByEmail(LOGIN_EMAIL).isEmpty()) {
-      User user = new User();
-      user.setEmail(LOGIN_EMAIL);
-      user.setPassword(LOGIN_PASSWORD);
-      loginService.register(user);
+      loginService.register(LOGIN_EMAIL, LOGIN_PASSWORD);
     }
   }
 
@@ -155,5 +150,36 @@ public class LoginControllerTest {
       .andExpect(view().name("new-user"))
       .andExpect(model().attribute("error", "Invalid registration data"))
       .andExpect(model().attributeExists(BINDING_RESULT_NEW_USER));
+  }
+
+  @Test
+  public void shouldRedirectToLoginFromHomeWhenNotAuthenticated() throws Exception {
+    this.mockMvc.perform(get("/home"))
+      .andExpect(status().is3xxRedirection())
+      .andExpect(redirectedUrl("/login"));
+  }
+
+  @Test
+  public void shouldShowHomeWhenAuthenticated() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(SessionInterceptor.USER_SESSION, new UserSession(LOGIN_EMAIL, "USER"));
+
+    this.mockMvc.perform(get("/home").session(session))
+      .andExpect(status().isOk())
+      .andExpect(view().name("home"))
+      .andExpect(model().attributeExists("user"))
+      .andExpect(content().string(containsString(LOGIN_EMAIL)));
+  }
+
+  @Test
+  public void shouldInvalidateSessionAndRedirectToLoginOnLogout() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+    session.setAttribute(SessionInterceptor.USER_SESSION, new UserSession(LOGIN_EMAIL, "USER"));
+
+    this.mockMvc.perform(post("/logout").session(session))
+      .andExpect(status().is3xxRedirection())
+      .andExpect(redirectedUrl("/login"));
+
+    assertThat(session.isInvalid(), is(true));
   }
 }

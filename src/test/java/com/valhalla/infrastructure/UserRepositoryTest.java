@@ -7,19 +7,15 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.valhalla.config.JpaTestConfig;
 import com.valhalla.domain.User;
 import com.valhalla.domain.exception.UserNotFoundException;
+import com.valhalla.integration.JpaIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { JpaTestConfig.class })
+@JpaIntegrationTest
 public class UserRepositoryTest {
 
   @Autowired

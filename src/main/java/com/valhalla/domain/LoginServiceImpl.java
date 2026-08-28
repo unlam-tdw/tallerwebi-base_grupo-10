@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LoginServiceImpl implements LoginService {
 
+  private static final String DEFAULT_ROLE = "USER";
+
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
@@ -23,18 +25,26 @@ public class LoginServiceImpl implements LoginService {
   @Override
   public User findUser(String email, String password) {
     User user = userRepository.findByEmail(email).orElse(null);
-    if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+    if (
+      user == null ||
+      !Boolean.TRUE.equals(user.getActive()) ||
+      !passwordEncoder.matches(password, user.getPassword())
+    ) {
       return null;
     }
     return user;
   }
 
   @Override
-  public void register(User user) {
-    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+  public void register(String email, String password) {
+    if (userRepository.findByEmail(email).isPresent()) {
       throw new UserAlreadyExists();
     }
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    User user = new User();
+    user.setEmail(email);
+    user.setPassword(passwordEncoder.encode(password));
+    user.setRole(DEFAULT_ROLE);
+    user.setActive(true);
     userRepository.save(user);
   }
 }
