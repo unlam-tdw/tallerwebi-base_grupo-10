@@ -93,6 +93,17 @@ $ mvn clean jetty:run
 ## 2. Thymeleaf
 * [Documentation](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
 
+### Templates organization
+Templates live under `WEB-INF/templates/` and are organized by role:
+`layouts/` (shared chrome: `head` fragment plus the `layout(content)`
+decorator), `components/` (reusable fragments such as the navbar and alerts)
+and `pages/` (complete pages, grouped by feature, e.g. `pages/auth/`).
+Views are resolved by path: a controller returns `"pages/auth/login"` and the
+`ThymeleafViewResolver` maps it to `WEB-INF/templates/pages/auth/login.html`.
+Pages opt into the layout with `th:replace="~{layouts/base :: layout(~{::main})}"`
+and fragments are referenced from the template root, e.g.
+`th:replace="~{components/navbar}"`.
+
 ## 3. Hamcrest
 * [Documentation](https://hamcrest.org/JavaHamcrest/javadoc/2.2/)
 
@@ -351,8 +362,11 @@ src/main/java/com/valhalla/
 └── presentation/     # MVC controllers, DTOs, session interceptor and global exception handling
 
 src/main/webapp/
-├── WEB-INF/views/thymeleaf/   # Thymeleaf templates (fragments + views)
-└── resources/core/dist/       # Compiled CSS (Vite + Tailwind) — ignored by git
+├── WEB-INF/templates/        # Thymeleaf templates
+│   ├── layouts/              # base page chrome (head + layout decorator)
+│   ├── components/           # reusable fragments (navbar, alerts)
+│   └── pages/                # full pages, grouped by feature (auth/)
+└── resources/core/dist/      # Compiled CSS (Vite + Tailwind) — ignored by git
 
 src/main/frontend/     # Style build (Vite + Tailwind, CSS-only)
 src/test/java/         # Unit and integration tests (JUnit, MockMvc, JPA, Playwright)

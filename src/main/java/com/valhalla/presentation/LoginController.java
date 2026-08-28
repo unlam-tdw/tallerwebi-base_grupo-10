@@ -18,8 +18,9 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class LoginController {
 
-  private static final String VIEW_LOGIN = "login";
-  private static final String VIEW_NEW_USER = "new-user";
+  private static final String VIEW_LOGIN = "pages/auth/login";
+  private static final String VIEW_NEW_USER = "pages/auth/new-user";
+  private static final String VIEW_HOME = "pages/home";
   private static final String REDIRECT_LOGIN = "redirect:/login";
   private static final String ATTR_LOGIN_DATA = "loginData";
   private static final String ATTR_NEW_USER_DATA = "newUserData";
@@ -86,7 +87,7 @@ public class LoginController {
     }
     Map<String, Object> model = new ModelMap();
     model.put(ATTR_USER, userSession);
-    return new ModelAndView("home", model);
+    return new ModelAndView(VIEW_HOME, model);
   }
 
   @RequestMapping(path = "/logout", method = RequestMethod.POST)

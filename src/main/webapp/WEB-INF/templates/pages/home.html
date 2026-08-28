@@ -1,13 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments :: head(null)}"></head>
+<head th:replace="~{layouts/base :: head('Home')}"></head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body th:replace="~{layouts/base :: layout(~{::main})}">
 
-  <nav th:replace="~{fragments :: navbar}"></nav>
-
-  <main role="main" class="flex-1 flex flex-col items-center justify-center gap-4 p-4">
+  <main class="flex-1 flex flex-col items-center justify-center gap-4 p-4">
     <h1 class="text-3xl font-semibold text-gray-900">Welcome to Taller Web 1</h1>
 
     <p class="text-gray-600">

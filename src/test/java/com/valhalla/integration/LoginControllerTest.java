@@ -66,7 +66,7 @@ public class LoginControllerTest {
   public void shouldReturnLoginPageWithLoginRequest() throws Exception {
     this.mockMvc.perform(get("/login"))
       .andExpect(status().isOk())
-      .andExpect(view().name("login"))
+      .andExpect(view().name("pages/auth/login"))
       .andExpect(model().attributeExists(ATTR_LOGIN_DATA));
   }
 
@@ -74,7 +74,7 @@ public class LoginControllerTest {
   public void shouldReturnNewUserPageWithNewUserRequest() throws Exception {
     this.mockMvc.perform(get("/new-user"))
       .andExpect(status().isOk())
-      .andExpect(view().name("new-user"))
+      .andExpect(view().name("pages/auth/new-user"))
       .andExpect(model().attributeExists(ATTR_NEW_USER_DATA));
   }
 
@@ -93,7 +93,7 @@ public class LoginControllerTest {
         post("/validate-login").param("email", LOGIN_EMAIL).param("password", "wrong-password")
       )
       .andExpect(status().isOk())
-      .andExpect(view().name("login"))
+      .andExpect(view().name("pages/auth/login"))
       .andExpect(model().attribute("error", "Invalid email or password"))
       .andExpect(model().attributeExists(ATTR_LOGIN_DATA));
   }
@@ -102,7 +102,7 @@ public class LoginControllerTest {
   public void shouldReRenderLoginWithValidationErrorsWhenEmailIsMissing() throws Exception {
     this.mockMvc.perform(post("/validate-login").param("password", LOGIN_PASSWORD))
       .andExpect(status().isOk())
-      .andExpect(view().name("login"))
+      .andExpect(view().name("pages/auth/login"))
       .andExpect(model().attribute("error", "Invalid email or password"))
       .andExpect(model().attributeExists(BINDING_RESULT_LOGIN));
   }
@@ -113,7 +113,7 @@ public class LoginControllerTest {
         post("/validate-login").param("email", "not-an-email").param("password", LOGIN_PASSWORD)
       )
       .andExpect(status().isOk())
-      .andExpect(view().name("login"))
+      .andExpect(view().name("pages/auth/login"))
       .andExpect(model().attribute("error", "Invalid email or password"))
       .andExpect(model().attributeExists(BINDING_RESULT_LOGIN));
   }
@@ -139,7 +139,7 @@ public class LoginControllerTest {
         post("/register").param("email", duplicateEmail).param("password", "another-password")
       )
       .andExpect(status().isOk())
-      .andExpect(view().name("new-user"))
+      .andExpect(view().name("pages/auth/new-user"))
       .andExpect(model().attribute("error", "Email is already registered"));
   }
 
@@ -147,7 +147,7 @@ public class LoginControllerTest {
   public void shouldReRenderNewUserWithValidationErrorsWhenInputIsInvalid() throws Exception {
     this.mockMvc.perform(post("/register").param("email", "not-an-email").param("password", "123"))
       .andExpect(status().isOk())
-      .andExpect(view().name("new-user"))
+      .andExpect(view().name("pages/auth/new-user"))
       .andExpect(model().attribute("error", "Invalid registration data"))
       .andExpect(model().attributeExists(BINDING_RESULT_NEW_USER));
   }
@@ -166,7 +166,7 @@ public class LoginControllerTest {
 
     this.mockMvc.perform(get("/home").session(session))
       .andExpect(status().isOk())
-      .andExpect(view().name("home"))
+      .andExpect(view().name("pages/home"))
       .andExpect(model().attributeExists("user"))
       .andExpect(content().string(containsString(LOGIN_EMAIL)));
   }

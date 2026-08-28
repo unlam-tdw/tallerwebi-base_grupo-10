@@ -1,0 +1,13 @@
+<nav th:fragment="navbar" xmlns:th="http://www.thymeleaf.org"
+  class="flex items-center justify-between bg-gray-900 px-4 text-white shadow">
+  <a class="navbar-brand inline-block py-3 text-lg font-semibold hover:text-gray-300"
+    href="#">UNLAM</a>
+  <div th:if="${user != null}" class="flex items-center gap-4 text-sm">
+    <span class="text-gray-300">Signed in as
+      <span class="font-medium text-white" th:text="${user.email}">email</span>
+    </span>
+    <form th:action="@{/logout}" method="POST">
+      <button type="submit" class="rounded-md bg-gray-700 px-3 py-2 hover:bg-gray-600">Logout</button>
+    </form>
+  </div>
+</nav>

@@ -1,13 +1,11 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments :: head(null)}"></head>
+<head th:replace="~{layouts/base :: head(null)}"></head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body th:replace="~{layouts/base :: layout(~{::main})}">
 
-  <nav th:replace="~{fragments :: navbar}"></nav>
-
-  <main role="main" class="flex-1 flex items-center justify-center p-4">
+  <main class="flex-1 flex items-center justify-center p-4">
     <div id="errorbox" class="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-md">
       <h3 class="mb-2 text-2xl font-semibold text-gray-900">An error occurred</h3>
       <hr class="mb-6 border-gray-200">

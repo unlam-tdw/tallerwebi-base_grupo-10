@@ -54,7 +54,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.validateLogin(loginData, bindingResult, requestMock);
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("login"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/login"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Invalid email or password")
@@ -97,7 +97,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.validateLogin(loginData, bindingResult, requestMock);
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("login"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/login"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Invalid email or password")
@@ -133,7 +133,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.register(invalidData, bindingResult);
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("new-user"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/new-user"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Invalid registration data")
@@ -173,7 +173,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.showLogin();
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("login"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/login"));
     assertThat(modelAndView.getModel().get("loginData"), instanceOf(LoginRequest.class));
   }
 
@@ -183,7 +183,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.showNewUser();
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("new-user"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/new-user"));
     assertThat(modelAndView.getModel().get("newUserData"), instanceOf(NewUserRequest.class));
   }
 
@@ -197,7 +197,7 @@ public class LoginControllerTest {
     ModelAndView modelAndView = controller.showHome(sessionMock);
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("home"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/home"));
     assertThat(modelAndView.getModel().get("user"), equalTo(sessionUser));
   }
 

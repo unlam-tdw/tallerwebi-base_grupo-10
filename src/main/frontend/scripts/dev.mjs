@@ -135,7 +135,7 @@ async function main() {
       "--proxy",
       "http://localhost:8080/spring",
       "--files",
-      "src/main/webapp/resources/core/dist/**/*.css,src/main/webapp/WEB-INF/views/thymeleaf/**/*.html",
+      "src/main/webapp/resources/core/dist/**/*.css,src/main/webapp/WEB-INF/templates/**/*.html",
       "--no-open",
       "--port",
       "3000",

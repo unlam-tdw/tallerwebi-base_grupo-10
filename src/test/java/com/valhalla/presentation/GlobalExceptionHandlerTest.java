@@ -17,7 +17,7 @@ public class GlobalExceptionHandlerTest {
     ModelAndView modelAndView = handler.handleUserAlreadyExists();
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("new-user"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/new-user"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Email is already registered")
@@ -31,7 +31,7 @@ public class GlobalExceptionHandlerTest {
     ModelAndView modelAndView = handler.handleUnexpectedError(new RuntimeException("boom"));
 
     // then
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("error"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/error"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("An unexpected error occurred")

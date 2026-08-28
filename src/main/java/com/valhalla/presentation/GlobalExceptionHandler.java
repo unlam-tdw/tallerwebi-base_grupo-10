@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     Map<String, Object> model = new ModelMap();
     model.put("newUserData", new NewUserRequest());
     model.put("error", "Email is already registered");
-    return new ModelAndView("new-user", model);
+    return new ModelAndView("pages/auth/new-user", model);
   }
 
   @ExceptionHandler(Exception.class)
@@ -27,6 +27,6 @@ public class GlobalExceptionHandler {
     LOGGER.log(Level.SEVERE, "Unhandled error", ex);
     Map<String, Object> model = new ModelMap();
     model.put("error", "An unexpected error occurred");
-    return new ModelAndView("error", model);
+    return new ModelAndView("pages/error", model);
   }
 }

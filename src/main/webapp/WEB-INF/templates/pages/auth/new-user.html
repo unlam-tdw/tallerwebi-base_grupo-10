@@ -1,15 +1,13 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments :: head(null)}"></head>
+<head th:replace="~{layouts/base :: head(null)}"></head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body th:replace="~{layouts/base :: layout(~{::main})}">
 
-  <nav th:replace="~{fragments :: navbar}"></nav>
+  <main class="flex-1 flex items-center justify-center p-4">
 
-  <main role="main" class="flex-1 flex items-center justify-center p-4">
-
-    <div id="loginbox" class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+    <div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
       <form action="#" th:action="@{/register}" method="POST" th:object="${newUserData}">
         <h3 class="mb-2 text-2xl font-semibold text-gray-900">New User</h3>
         <hr class="mb-6 border-gray-200">
@@ -31,7 +29,7 @@
         <button id="btn-register" type="submit"
           class="mt-6 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700">Register</button>
 
-        <p th:replace="~{fragments :: errorAlert(${error})}"></p>
+        <p th:replace="~{components/alerts/error-alert :: errorAlert(${error})}"></p>
       </form>
     </div>
 
