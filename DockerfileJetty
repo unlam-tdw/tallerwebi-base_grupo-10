@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y wget && \
     rm jetty.tar.gz && \
     cd $JETTY_HOME && echo "y" | java -jar start.jar --add-modules=server,http,deploy,ee10-deploy,ee10-webapp,ee10-servlet,ee10-annotations,ee10-jsp
 
-COPY --from=build /workspace/target/tallerwebi-base-1.0-SNAPSHOT.war $JETTY_HOME/webapps/spring.war
+COPY --from=build /workspace/target/valhalla-1.0-SNAPSHOT.war $JETTY_HOME/webapps/spring.war
 
 EXPOSE 8080
 

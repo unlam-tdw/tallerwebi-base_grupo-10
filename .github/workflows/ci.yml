@@ -56,7 +56,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: tallerwebi
+          MYSQL_DATABASE: valhalla
           MYSQL_USER: user
           MYSQL_PASSWORD: user
         ports:
@@ -91,7 +91,7 @@ jobs:
         env:
           DB_HOST: localhost
           DB_PORT: "3306"
-          DB_NAME: tallerwebi
+          DB_NAME: valhalla
           DB_USER: user
           DB_PASSWORD: user
         run: |
@@ -115,7 +115,7 @@ jobs:
         env:
           DB_HOST: localhost
           DB_PORT: "3306"
-          DB_NAME: tallerwebi
+          DB_NAME: valhalla
           DB_USER: user
           DB_PASSWORD: user
         run: |

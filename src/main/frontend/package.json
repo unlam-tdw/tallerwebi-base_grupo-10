@@ -1,5 +1,5 @@
 {
-  "name": "tallerwebi-frontend",
+  "name": "valhalla-frontend",
   "version": "1.0.0",
   "description": "Frontend styles (CSS-only): Vite + Tailwind as build-time tools; all logic lives in Java",
   "type": "module",

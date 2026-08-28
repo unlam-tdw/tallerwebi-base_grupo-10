@@ -55,7 +55,7 @@ You need to have installed:
 ### First time cloning the repo
 ```powershell
 git clone <repo-url>
-cd tallerwebi-base_grupo-10
+cd valhalla-base_grupo-10
 npm run dev
 ```
 
@@ -84,7 +84,7 @@ http://localhost:8080/spring is still available if you prefer to see the app wit
 
 # Start a database with docker
 docker build -f DockerfileSQL -t mysql .
-docker run --env-file .env --name tallerwebi-mysql -d -p 3306:3306 mysql
+docker run --env-file .env --name valhalla-mysql -d -p 3306:3306 mysql
 
 # Start the project
 $ mvn clean jetty:run
@@ -141,7 +141,7 @@ This produces `src/main/webapp/resources/core/dist/main.css` (CSS only; no JavaS
 
 ## 9. Docker:
 The docker files in this project are set up to deploy a WAR file using the Jetty or Tomcat server.
-The docker files for Jetty and Tomcat expect the WAR file to be named "tallerwebi-base-1.0-SNAPSHOT"; for that, modify the <artifactId> and <version> attributes in the pom.xml file.
+The docker files for Jetty and Tomcat expect the WAR file to be named "valhalla-base-1.0-SNAPSHOT"; for that, modify the <artifactId> and <version> attributes in the pom.xml file.
 
 To generate a WAR file, run maven.
 ```shell
@@ -150,28 +150,28 @@ mvn clean package
 
 Once we have the WAR file, generate the docker image.
 ```shell
-docker build -f DockerfileJetty -t tallerwebi .
-docker build -f DockerfileTomcat -t tallerwebi .
+docker build -f DockerfileJetty -t valhalla .
+docker build -f DockerfileTomcat -t valhalla .
 ```
 
 Once the image is generated, we can instantiate a container and run it.
 ```shell
-docker run -p 8080:8080 tallerwebi
+docker run -p 8080:8080 valhalla
 ```
 
 ### 9.1 Basic commands
 ```shell
-# Create an image named "tallerwebi".
-docker build -f DockerfileJetty -t tallerwebi .
+# Create an image named "valhalla".
+docker build -f DockerfileJetty -t valhalla .
 
-# Instantiate and run a container from the "tallerwebi" image.
-docker run -p 8080:8080 tallerwebi 
+# Instantiate and run a container from the "valhalla" image.
+docker run -p 8080:8080 valhalla 
 
 # Run an already instantiated container.
 docker start <containerId> 
 
-# Instantiate a container from the tallerwebi image to run bash.
-docker run -it --entrypoint /bin/bash tallerwebi
+# Instantiate a container from the valhalla image to run bash.
+docker run -it --entrypoint /bin/bash valhalla
 
 # Show the logs.
 docker logs <containerId>
@@ -195,7 +195,7 @@ docker rmi <imageId>
 docker build -f DockerfileSQL -t mysql .
 
 # Instantiate a container from the mysql image.
-docker run --env-file .env --name tallerwebi-mysql -d -p 3306:3306 mysql # sudo apt install mysql-client
+docker run --env-file .env --name valhalla-mysql -d -p 3306:3306 mysql # sudo apt install mysql-client
 ```
 
 ## 10. docker-compose
@@ -341,7 +341,7 @@ rd /s /q .code-quality\jacoco & mvn clean test
 ## Project structure
 
 ```
-src/main/java/com/tallerwebi/
+src/main/java/com/valhalla/
 ├── config/           # Spring configuration (web, JPA, security, validation, environment)
 ├── domain/           # Business logic (services, models, exceptions)
 ├── infrastructure/   # Persistence (Spring Data JPA repositories)
