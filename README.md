@@ -60,20 +60,22 @@ npm run dev
 ```
 
 El clon **no trae** `node_modules`, ni la hoja de estilos `dist/main.css` (ignorada por git), ni MySQL corriendo. `npm run dev` resuelve todo solo:
-`npm ci` instala las dependencias del frontend → `npm run build` genera los estilos → `docker compose up -d mysql` levanta la base. Después abrí http://localhost:8080/spring y entrá con `test@unlam.edu.ar` / `test`.
+`npm ci` instala las dependencias del frontend → `npm run build` genera los estilos → `docker compose up -d mysql` levanta la base. Después abrí http://localhost:3000/spring y entrá con `test@unlam.edu.ar` / `test`.
 
 ### Desarrollo local con un comando (recomendado)
 ```powershell
 npm run dev
 ```
-Levanta MySQL (docker), compila los estilos y arranca Jetty:
-**las plantillas Thymeleaf se actualizan con solo refrescar (F5)** — los cambios en
-Java requieren reiniciar con `Ctrl+C` y volver a correr `npm run dev`. En el primer
-arranque instala las dependencias del frontend solo. Frena con `Ctrl+C` (apaga Jetty y MySQL).
+Levanta MySQL (docker), compila los estilos, arranca Jetty y abre un proxy **BrowserSync** con auto-reload:
 
-> Estilos: se compilan frescos en cada arranque. Si estás trabajando sobre
-> estilos en vivo, corré el watch aparte en otra terminal:
-> `cd src/main/frontend && npm run build -- --watch`
+- **Estilos (CSS/Tailwind)**: el watcher de Vite regenera `dist/main.css` al guardar
+- **Plantillas Thymeleaf**: se actualizan en vivo (cache off)
+- **El browser se recarga solo** ✨ — entrá por **http://localhost:3000/spring** (sin F5)
+
+Los cambios en **Java** requieren reiniciar: `Ctrl+C` y volver a correr `npm run dev`.
+`Ctrl+C` apaga todo: watch, Jetty, BrowserSync y MySQL. En el primer arranque
+instala las dependencias del frontend solo. El puerto directo
+http://localhost:8080/spring sigue disponible si querés ver la app sin el proxy.
 
 ### Paso a paso (sin el orquestador)
 ```shell
@@ -132,6 +134,8 @@ $ npm ci
 $ npm run build
 ```
 Esto produce `src/main/webapp/resources/core/dist/main.css` (solo CSS; no se emite JavaScript). El frontend solo **renderiza**; no hay lógica de validación en el cliente.
+
+> Para desarrollo con **recarga automática** (estilos + plantillas + BrowserSync sin F5), `npm run dev` ya se encarga de todo (sección 1): no hace falta correr estos comandos a mano.
 
 > **Nota (pirámide de tests):** `mvn test` ejecuta las suites de pruebas Java (unitarias + integración MockMvc con Spring Test) y **no** requiere Node. El frontend solo se compila en la fase de empaquetado (`mvn package`, vía `frontend-maven-plugin`). Las pruebas E2E (Playwright) se invocan bajo demanda con los comandos de la sección 7 y requieren MySQL en el puerto 3306 y la aplicación levantada.
 

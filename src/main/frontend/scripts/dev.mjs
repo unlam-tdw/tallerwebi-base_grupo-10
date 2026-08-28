@@ -41,6 +41,24 @@ function ejecutarYEsperar(comando, args, cwd = ROOT) {
   });
 }
 
+// Espera a que Jetty conteste antes de abrir el proxy de BrowserSync
+// (evita la ventana de 502 en http://localhost:3000 durante el boot).
+async function esperarJetty(url, timeoutMs = 90_000) {
+  const fin = Date.now() + timeoutMs;
+  while (Date.now() < fin) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        return;
+      }
+    } catch {
+      // Jetty todavia no esta arriba
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  console.warn("[dev] Jetty no respondió a tiempo; BrowserSync puede mostrar 502 hasta que arranque.");
+}
+
 function apagarMysql() {
   console.log("\n==> Apagando MySQL (docker compose stop mysql)");
   return new Promise((resolve) => {
@@ -81,20 +99,23 @@ main().catch((error) => {
 });
 
 async function main() {
-  console.log("==> 1/4 MySQL (docker compose up -d mysql)");
+  console.log("==> 1/5 MySQL (docker compose up -d mysql)");
   await ejecutarYEsperar("docker", ["compose", "up", "-d", "mysql"]);
 
   if (!existsSync(path.join(FRONTEND, "node_modules"))) {
-    console.log("==> 2/4 Instalando dependencias del frontend (npm ci)");
+    console.log("==> 2/5 Instalando dependencias del frontend (npm ci)");
     await ejecutarYEsperar(NPM, ["ci"], FRONTEND);
   } else {
-    console.log("==> 2/4 Dependencias del frontend OK (node_modules presente)");
+    console.log("==> 2/5 Dependencias del frontend OK (node_modules presente)");
   }
 
-  console.log("==> 3/4 CSS inicial (npm run build)");
+  console.log("==> 3/5 CSS inicial (npm run build)");
   await ejecutarYEsperar(NPM, ["run", "build"], FRONTEND);
 
-  console.log("==> 4/4 Jetty listo — plantillas Thymeleaf en vivo (F5). Java requiere reiniciar.");
+  console.log("==> 4/5 Watcher de estilos en vivo (vite build --watch)");
+  const watch = correr(NPM, ["run", "build", "--", "--watch"], FRONTEND);
+
+  console.log("==> 5/5 Jetty + BrowserSync (auto-reload del browser)");
   const jetty = correr(MVN, ["jetty:run"], ROOT);
 
   jetty.on("exit", (code) => {
@@ -104,6 +125,29 @@ async function main() {
     }
   });
 
-  console.log("\n[dev] Todo arriba → http://localhost:8080/spring  |  Ctrl+C apaga todo.");
-  console.log("[dev] Estilos en vivo (opcional): en otra terminal → cd src/main/frontend && npm run build -- --watch\n");
+  await esperarJetty("http://localhost:8080/spring");
+
+  const sync = correr(
+    "npx",
+    [
+      "browser-sync",
+      "start",
+      "--proxy",
+      "http://localhost:8080/spring",
+      "--files",
+      "src/main/webapp/resources/core/dist/**/*.css,src/main/webapp/WEB-INF/views/thymeleaf/**/*.html",
+      "--no-open",
+      "--port",
+      "3000",
+      "--reload-delay",
+      "500",
+    ],
+    ROOT
+  );
+
+  console.log("\n[dev] Todo arriba:");
+  console.log("[dev]   Browser con auto-reload → http://localhost:3000/spring");
+  console.log("[dev]   Jetty directo            → http://localhost:8080/spring");
+  console.log("[dev] Editá CSS o plantillas y el browser se actualiza solo.");
+  console.log("[dev] Ctrl+C apaga todo (watch, Jetty, BrowserSync y MySQL).\n");
 }
