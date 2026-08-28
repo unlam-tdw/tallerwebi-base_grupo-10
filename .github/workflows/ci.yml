@@ -25,29 +25,6 @@ jobs:
         run: |
           mvn clean verify --fail-at-end
 
-  frontend:
-    name: Frontend (install, lint & build)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: src/main/frontend
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: src/main/frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build styles (Vite + Tailwind)
-        run: npm run build
-
   e2e:
     name: E2E (Playwright against a running Jetty + MySQL)
     runs-on: ubuntu-latest

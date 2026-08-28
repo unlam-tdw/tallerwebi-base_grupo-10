@@ -1,8 +1,0 @@
-@import "tailwindcss";
-
-/*
-  Tailwind v4 detects content inside the workspace, but the Thymeleaf
-  templates live outside (src/main/webapp/WEB-INF/templates). They are
-  declared with @source so their utility classes are generated too.
-*/
-@source "../../../webapp/WEB-INF/templates/";

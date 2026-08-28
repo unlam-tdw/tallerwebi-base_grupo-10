@@ -9,4 +9,3 @@ target/
 openspec/
 
 **/node_modules/
-src/main/webapp/resources/core/dist/

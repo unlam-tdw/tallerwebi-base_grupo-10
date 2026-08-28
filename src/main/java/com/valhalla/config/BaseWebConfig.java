@@ -1,6 +1,8 @@
 package com.valhalla.config;
 
 import com.valhalla.presentation.SessionInterceptor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,14 +31,31 @@ public abstract class BaseWebConfig implements WebMvcConfigurer {
   @Autowired
   private ApplicationContext applicationContext;
 
+  // Dev-only live reload: active when `mvn jetty:run` serves the templates in
+  // place (the directory exists at the repo root). In the packaged WAR (Docker)
+  // that path does not exist and the endpoint answers 404 instead.
+  private static boolean isLiveReload() {
+    return Files.exists(Path.of("src/main/webapp/WEB-INF/templates"));
+  }
+
   @Override
   public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/dist/**").addResourceLocations("/resources/core/dist/");
+    registry.addResourceHandler("/js/**").addResourceLocations("/resources/core/js/");
   }
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/home");
+    if (isLiveReload()) {
+      registry
+        .addInterceptor(new DevReloadInterceptor(devReloadController()))
+        .addPathPatterns("/**");
+    }
+  }
+
+  @Bean
+  public DevReloadController devReloadController() {
+    return new DevReloadController();
   }
 
   // https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html

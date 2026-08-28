@@ -49,39 +49,38 @@ Docker is a container platform that packages applications together with all thei
 You need to have installed:
 - **JDK 25**
 - **Maven**
-- **Node.js** (with npm)
 - **Docker Desktop** (with Docker Compose v2)
+
+No Node.js is needed: Tailwind is compiled in the browser by a vendored script
+(see section 8).
 
 ### First time cloning the repo
 ```powershell
 git clone <repo-url>
-cd valhalla-base_grupo-10
-npm run dev
+cd valhalla
+docker compose up --build
 ```
 
-The clone does **not** include `node_modules`, the stylesheet `dist/main.css` (ignored by git), or a running MySQL. `npm run dev` handles everything by itself:
-`npm ci` installs the frontend dependencies → `npm run build` generates the styles → `docker compose up -d mysql` starts the database. Then open http://localhost:3000/spring and sign in with `test@unlam.edu.ar` / `test`.
+The clone needs no frontend setup: the Tailwind runtime is already vendored in
+the repo, so there is nothing to install or compile for styles. `docker compose
+up --build` starts MySQL and builds + launches the app on
+http://localhost:8080/spring (sign in with `test@unlam.edu.ar` / `test`).
 
-### Local development with one command (recommended)
-```powershell
-npm run dev
+### Local development (recommended)
+```shell
+docker compose up -d mysql   # database only (the app seeds the schema on boot)
+mvn clean jetty:run          # app on http://localhost:8080/spring
 ```
-Starts MySQL (docker), compiles the styles, launches Jetty and opens a **BrowserSync** proxy with auto-reload:
 
-- **Styles (CSS/Tailwind)**: the Vite watcher regenerates `dist/main.css` on save
-- **Thymeleaf templates**: update live (cache off)
-- **The browser reloads itself** ✨ — enter through **http://localhost:3000/spring** (no F5 needed)
-
-Changes in **Java** require a restart: `Ctrl+C` and run `npm run dev` again.
-`Ctrl+C` shuts everything down: watch, Jetty, BrowserSync and MySQL. On the first
-run it installs the frontend dependencies by itself. The direct port
-http://localhost:8080/spring is still available if you prefer to see the app without the proxy.
+- **Styles (Tailwind)**: compiled **in the browser** by the vendored
+  `@tailwindcss/browser` script — there is no build step, edit any `.html` and
+  the utility classes are picked up on refresh.
+- **Thymeleaf templates**: update live (cache off).
+- **Java changes** require a restart: `Ctrl+C` and run `mvn clean jetty:run`
+  again.
 
 ### Step by step (without the orchestrator)
 ```shell
-# Generate the styles once (dist/ is ignored by git; the Maven plugin
-# only builds at prepare-package): mvn package  or  cd src/main/frontend && npm ci && npm run build
-
 # Start a database with docker
 docker build -f DockerfileSQL -t mysql .
 docker run --env-file .env --name valhalla-mysql -d -p 3306:3306 mysql
@@ -119,7 +118,6 @@ and fragments are referenced from the template root, e.g.
 ## 7. How to run the end-to-end tests?
 
 ### Start the server
-> Before starting the server, generate the frontend stylesheet the first time (see the note in section 1).
 ```shell
 # Option 1
 $ mvn clean jetty:run
@@ -133,26 +131,31 @@ $ mvn test -Dtest="LoginViewE2E"
 $ mvn test -Dtest="LoginViewE2E#shouldNavigateToHomeWhenUserExists"
 ```
 
-> **Note (UI contract):** the E2E tests depend on the rendered views keeping the `id`/`name` values their selectors use (`#email`, `#password`, `#btn-login`, `#btn-register`, `nav a.navbar-brand` and the error message "Invalid email or password"). The frontend (Vite/Tailwind) only provides styles (CSS) to those views without changing that contract.
+> **Note (UI contract):** the E2E tests depend on the rendered views keeping the `id`/`name` values their selectors use (`#email`, `#password`, `#btn-login`, `#btn-register`, `nav a.navbar-brand` and the error message "Invalid email or password"). The frontend only provides styles (Tailwind, compiled in the browser) to those views without changing that contract.
 
-## 8. How to compile the styles?
-The frontend is **styles only (CSS)**: Thymeleaf renders all HTML and all logic lives in Java. Vite + Tailwind act only as **build-time** tools that generate a stylesheet. Compile from the `src/main/frontend` folder:
+## 8. How are the styles compiled?
+There is **no build step**: Tailwind is compiled in the browser. The layout
+(`layouts/base.html`) loads the vendored `@tailwindcss/browser` script from
+`src/main/webapp/resources/core/js/tailwind-browser.js`, which scans the
+rendered DOM and generates the CSS on the fly. A small inline script hides the
+page until the styles are ready (no unstyled flash). Thymeleaf renders all HTML
+and all business logic lives in Java — the client runs no custom JavaScript.
+
+To **upgrade** Tailwind, replace the vendored file with a newer build:
 ```shell
-$ cd src/main/frontend
-# If it is the first time, download and install the dependencies
-$ npm ci
-# Generate the stylesheet (CSS ONLY, no JS)
-$ npm run build
+$ curl -o src/main/webapp/resources/core/js/tailwind-browser.js \
+  https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3/dist/index.global.js
 ```
-This produces `src/main/webapp/resources/core/dist/main.css` (CSS only; no JavaScript is emitted). The frontend only **renders**; there is no client-side validation logic.
 
-> For development with **automatic reload** (styles + templates + BrowserSync, no F5), `npm run dev` already handles everything (section 1): you do not need to run these commands by hand.
-
-> **Note (test pyramid):** `mvn test` runs the Java test suites (unit + MockMvc integration with Spring Test) and does **not** require Node. The frontend only builds in the packaging phase (`mvn package`, via `frontend-maven-plugin`). The E2E tests (Playwright) are invoked on demand with the section 7 commands and require MySQL on port 3306 and the application up and running.
+> **Note (test pyramid):** `mvn test` runs the Java test suites (unit + MockMvc
+> integration with Spring Test) and does not require Node — the whole app needs
+> no frontend toolchain at all. The E2E tests (Playwright) are invoked on demand
+> with the section 7 commands and require MySQL on port 3306 and the application
+> up and running.
 
 ## 9. Docker:
 The docker files in this project are set up to deploy a WAR file using the Jetty or Tomcat server.
-The docker files for Jetty and Tomcat expect the WAR file to be named "valhalla-base-1.0-SNAPSHOT"; for that, modify the <artifactId> and <version> attributes in the pom.xml file.
+The docker files for Jetty and Tomcat expect the WAR file to be named "valhalla-1.0-SNAPSHOT"; for that, modify the <artifactId> and <version> attributes in the pom.xml file.
 
 To generate a WAR file, run maven.
 ```shell
@@ -242,7 +245,7 @@ mvn compile
 # Runs the Java test suites (unit + MockMvc integration)
 mvn test
 
-# Packages the compiled code into a JAR or WAR file (also downloads dependencies and builds the frontend bundle with Vite)
+# Packages the compiled code into a JAR or WAR file (downloads dependencies)
 mvn package
 
 # Verifies that the package is valid and meets the quality criteria
@@ -318,8 +321,11 @@ Automatically formats Java code so it complies with the style rules.
 * **Function:** Rewrites your `.java` files to fix indentation and formatting automatically when running `mvn test` or `mvn compile`.
 * **Documentation:** [Prettier Java](https://github.com/jhipster/prettier-java)
 
-### Frontend / styles (Vite + Tailwind)
-The frontend is limited to styles (CSS): there is no JavaScript or TypeScript linter, since the client does not run its own logic (everything lives in Java). The only frontend task is `npm run build` (Vite + Tailwind), which generates the `main.css` stylesheet from `src/main/frontend`. Unlike Prettier, Checkstyle, PMD, CPD and JaCoCo, it runs with npm and not in the Maven phases.
+### Styles (Tailwind in the browser)
+There is no frontend build or linter: `@tailwindcss/browser` is vendored at
+`src/main/webapp/resources/core/js/tailwind-browser.js` and compiles the
+utility classes in the browser, so the app needs no Node, npm, Vite or build
+step — the client runs no logic of its own.
 
 ### JaCoCo (Code Coverage)
 Measures what percentage of the source code is covered by the tests.
@@ -366,10 +372,9 @@ src/main/webapp/
 │   ├── layouts/              # base page chrome (head + layout decorator)
 │   ├── components/           # reusable fragments (navbar, alerts)
 │   └── pages/                # full pages, grouped by feature (auth/)
-└── resources/core/dist/      # Compiled CSS (Vite + Tailwind) — ignored by git
+└── resources/core/js/        # Vendored @tailwindcss/browser (Tailwind compiled in the browser)
 
-src/main/frontend/     # Style build (Vite + Tailwind, CSS-only)
-src/test/java/         # Unit and integration tests (JUnit, MockMvc, JPA, Playwright)
+src/test/java/               # Unit and integration tests (JUnit, MockMvc, JPA, Playwright)
 docker-compose.yml    # Local stack: mysql (dev) + jetty-app (dockerized app)
 DockerfileJetty       # Jetty multi-stage image (compiles the WAR inside the image)
 DockerfileSQL         # MySQL image (schema + seed initialized by the app at boot)
@@ -400,10 +405,9 @@ logic lives in Java (domain/services).
 * Thymeleaf 3.1.5.RELEASE (spring6)
 * Embedded Jetty Server EE10 12.0.37
 * Servlet API (Jakarta) 6.0.0
-* Vite 8 + Tailwind CSS 4 (styles only at build-time; generates `src/main/webapp/resources/core/dist/main.css`, CSS ONLY, no JavaScript)
+* Tailwind CSS 4.3.3 compiled in the browser (vendored `@tailwindcss/browser`; no build step, no Node)
 * IntelliJ IDEA | VS Code
 * Maven 3.9+ (on JDK 25)
-* frontend-maven-plugin 2.0.2 (downloads Node v24.7.0 into `target/` to build the frontend)
 * Spring Test 6.2.19
 * Hamcrest 2.2
 * JUnit 6.1.2
@@ -415,6 +419,5 @@ logic lives in Java (domain/services).
 * Checkstyle 13.8.0 (plugin 3.6.0, Google Style)
 * Prettier Maven Plugin 0.22 (Prettier-Java 2.5.0)
 * JaCoCo 0.8.15
-* Node v24.7.0 (`frontend-maven-plugin` downloads it automatically into `target/`; installing Node manually is optional, only useful for compiling the frontend styles directly)
 
 *_Project modified based on: [Spring MVC hello world example (Maven and Thymeleaf)](https://mkyong.com/spring-mvc/spring-mvc-hello-world-example/) _*

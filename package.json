@@ -1,9 +1,0 @@
-{
-  "name": "valhalla",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "npm --prefix src/main/frontend run dev"
-  }
-}

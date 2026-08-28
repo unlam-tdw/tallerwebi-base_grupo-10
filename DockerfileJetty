@@ -1,6 +1,6 @@
 # =============================================================
-# Etapa 1: compila el WAR (incluye el build del frontend via
-# frontend-maven-plugin en prepare-package)
+# Etapa 1: compila el WAR (sin build de frontend: Tailwind se
+# compila en el navegador via @tailwindcss/browser vendored)
 # =============================================================
 FROM eclipse-temurin:25-jdk AS build
 
