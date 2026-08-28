@@ -22,12 +22,12 @@ hs_err_pid*
 **/node_modules/
 .vscode/
 
-# Reportes de codigo limpio y cobertura de pruebas
-.calidad-de-codigo/
+# Code quality and test coverage reports
+.code-quality/
 
 .atl
 openspec
 
-# Frontend (Vite) build output y dependencias locales
+# Frontend (Vite) build output and local dependencies
 src/main/frontend/node_modules/
 src/main/webapp/resources/core/dist/

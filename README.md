@@ -1,368 +1,368 @@
-Proyecto base Taller Web I (Maven and Thymeleaf)
+Taller Web I base project (Maven and Thymeleaf)
 ===============================
 
-## Preparación del ambiente de desarrollo
-Antes de comenzar a trabajar con el proyecto, debemos instalar y configurar algunas herramientas:
+## Development environment setup
+Before working with the project, we must install and configure some tools:
 
 ### Java
-Java es el lenguaje de programación con el que trabajaremos. El proyecto esta configurado para funcionar con la version 25 de Java (LTS).
-* Descargar el JDK para el sistema operativo en uso: [JDK 25 Temurin para Linux/Windows](https://adoptium.net/temurin/releases/?version=25).
-* Descomprimir el archivo descargado en una carpeta. 
-    * Ejemplo: `/home/java` (En Linux) o `C:\java` (en Windows).
-* Configurar una variable de entorno con la clave `JAVA_HOME` indicando en el valor, la ruta donde se descomprimió el archivo descargado. 
-    * Ejemplo: `C:\java\jdk-25` (en Windows) o `/home/java/jdk-25` (en Linux).
-* Configurar la variable de entorno `PATH` incluyendo la variable `JAVA_HOME`: 
-    * Agregamos: `%JAVA_HOME%\bin` al listado existente.
-* Luego de guardar la configuración de las variables de entorno, ejecutamos en el CMD o Terminal `java -version` y luego `javac -version`, debiendo visualizar como salida la versión de Java y la versión del compilador instaladas, respectivamente.
-* [Guía para instalar Java en Windows](https://www.java.com/es/download/help/windows_manual_download.html)
-* [Guía para instalar Java en Linux](https://www.java.com/es/download/help/linux_x64_install.html)
+Java is the programming language we will work with. The project is configured to run with Java 25 (LTS).
+* Download the JDK for your operating system: [JDK 25 Temurin for Linux/Windows](https://adoptium.net/temurin/releases/?version=25).
+* Unzip the downloaded file into a folder.
+    * Example: `/home/java` (Linux) or `C:\java` (Windows).
+* Set an environment variable named `JAVA_HOME` pointing to the folder where the downloaded file was unzipped.
+    * Example: `C:\java\jdk-25` (Windows) or `/home/java/jdk-25` (Linux).
+* Add `JAVA_HOME` to the `PATH` environment variable:
+    * Add `%JAVA_HOME%\bin` to the existing list.
+* After saving the environment variable configuration, run `java -version` and then `javac -version` in CMD or Terminal; you should see the installed Java version and the compiler version as output, respectively.
+* [Guide to installing Java on Windows](https://www.java.com/es/download/help/windows_manual_download.html)
+* [Guide to installing Java on Linux](https://www.java.com/es/download/help/linux_x64_install.html)
 
 ### Maven
-Maven es una herramienta que permite la gestión de proyectos (principalmente proyectos Java). Simplifica y estandariza el proceso de construcción del producto software. 
-* Es requisito tener instalado Java 25 y configuradas las variables de entorno (`JAVA_HOME` y `PATH`).
-* Descargar Maven desde el [sitio oficial](https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip) y luego descomprimirlo en una carpeta (Puede estar junto a la instalación de Java o en otra carpeta).
-* Configurar una variable de entorno con la clave `MAVEN_HOME` indicando en el valor, la ruta donde se descomprimió el archivo descargado. 
-    * Ejemplo: `/home/maven/apache-maven-3.9.16` (en Linux) o `C:\maven\apache-maven-3.9.16` (en Windows).
-* Configurar la variable de entorno `PATH` incluyendo la variable `MAVEN_HOME`: 
-    * Agregamos: `%MAVEN_HOME%\bin` al listado existente.
-* Luego de guardar la configuración de las variables de entorno, ejecutamos en el CMD o Terminal `mvn -version`, debiendo visualizar como salida la versión de Maven descargada. Si el Terminal o CMD estaba abierto durante la configuración, hay que cerrarlo y abrir nuevamente.
-* Carpeta **.m2**: Es el repositorio local de Maven donde guarda los artefactos (como archivos JAR), descargados por dependencias o generados localmente. Por defecto esta carpeta se crea en las siguientes rutas:
-    * Linux: `/home/<mi usuario>/.m2`.
-    * Windows: `C:\Users\<mi usuario>\.m2`.
-* [Guía para instalar Maven en Windows o Linux](https://maven.apache.org/install.html).
- 
-#### Configuración en IDEs
-* IntelliJ: Maven viene instalado y el plugin está accesible en el panel de la derecha (aparece con una letra **M**). Permite ejecutar comandos, gestionar plugins y dependencias. 
-* VS Code (Plugins recomendados):
-    * Maven for Java: Es el plugin oficial. Desde el explorador, como nueva sección debajo del proyecto aparece Maven, facilitando la ejecución de comandos, gestión de dependencias y plugins.
-    * XML: Mejora el autocompletado y la validación de sintáxis en archivos XML. Para Maven es crucial el archivo `pom.xml`,
+Maven is a project management tool (mainly for Java projects). It simplifies and standardizes the software build process.
+* It is required to have Java 25 installed and the environment variables configured (`JAVA_HOME` and `PATH`).
+* Download Maven from the [official site](https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip) and unzip it into a folder (it can live next to the Java installation or elsewhere).
+* Set an environment variable named `MAVEN_HOME` pointing to the folder where the downloaded file was unzipped.
+    * Example: `/home/maven/apache-maven-3.9.16` (Linux) or `C:\maven\apache-maven-3.9.16` (Windows).
+* Add `MAVEN_HOME` to the `PATH` environment variable:
+    * Add `%MAVEN_HOME%\bin` to the existing list.
+* After saving the environment variable configuration, run `mvn -version` in CMD or Terminal; you should see the downloaded Maven version as output. If the Terminal or CMD was open during the configuration, close it and open it again.
+* **.m2 folder**: Maven's local repository where it stores artifacts (like JAR files), downloaded as dependencies or generated locally. By default this folder is created in the following paths:
+    * Linux: `/home/<my user>/.m2`.
+    * Windows: `C:\Users\<my user>\.m2`.
+* [Guide to installing Maven on Windows or Linux](https://maven.apache.org/install.html).
+
+#### IDE configuration
+* IntelliJ: Maven comes installed and the plugin is available in the panel on the right (shown with the letter **M**). It lets you run commands and manage plugins and dependencies.
+* VS Code (recommended plugins):
+    * Maven for Java: the official plugin. From the explorer, a Maven section appears below the project, making it easy to run commands and manage dependencies and plugins.
+    * XML: improves autocompletion and syntax validation in XML files. For Maven the `pom.xml` file is crucial.
 
 ### Docker
-Docker es una plataforma de contenedores que permite empaquetar aplicaciones con todas sus dependencias en contenedores ligeros y portables. Los contenedores se ejecutan de forma aislada y consistente en cualquier entorno que tenga Docker instalado.
-* Para instalar sobre Windows, el camino mas simple es instalar `Docker Desktop`. Para esto es necesario seguir esta [guía](https://docs.docker.com/desktop/setup/install/windows-install/).
-* Para instalar sobre Linux, alcanza con instalar `Docker Engine` siguiendo esta [guía](https://docs.docker.com/engine/install/ubuntu/). También es posible instalar `Docker Desktop` (incluye Docker Engine).
+Docker is a container platform that packages applications together with all their dependencies into lightweight, portable containers. Containers run isolated and consistently in any environment with Docker installed.
+* To install on Windows, the simplest path is `Docker Desktop`. Follow this [guide](https://docs.docker.com/desktop/setup/install/windows-install/).
+* To install on Linux, just install `Docker Engine` by following this [guide](https://docs.docker.com/engine/install/ubuntu/). You can also install `Docker Desktop` (it includes Docker Engine).
 
-## 1. ¿Cómo iniciar el proyecto?
-> Necesitamos previamente una base de datos mysql en el puerto 3306.
+## 1. How to start the project?
+> We need a mysql database on port 3306 beforehand.
 
-### Requisitos previos (primera vez en tu máquina)
-Necesitás tener instalados:
+### Prerequisites (first time on your machine)
+You need to have installed:
 - **JDK 25**
 - **Maven**
-- **Node.js** (con npm)
-- **Docker Desktop** (con Docker Compose v2)
+- **Node.js** (with npm)
+- **Docker Desktop** (with Docker Compose v2)
 
-### Primera vez que clonás el repo
+### First time cloning the repo
 ```powershell
-git clone <url-del-repo>
+git clone <repo-url>
 cd tallerwebi-base_grupo-10
 npm run dev
 ```
 
-El clon **no trae** `node_modules`, ni la hoja de estilos `dist/main.css` (ignorada por git), ni MySQL corriendo. `npm run dev` resuelve todo solo:
-`npm ci` instala las dependencias del frontend → `npm run build` genera los estilos → `docker compose up -d mysql` levanta la base. Después abrí http://localhost:3000/spring y entrá con `test@unlam.edu.ar` / `test`.
+The clone does **not** include `node_modules`, the stylesheet `dist/main.css` (ignored by git), or a running MySQL. `npm run dev` handles everything by itself:
+`npm ci` installs the frontend dependencies → `npm run build` generates the styles → `docker compose up -d mysql` starts the database. Then open http://localhost:3000/spring and sign in with `test@unlam.edu.ar` / `test`.
 
-### Desarrollo local con un comando (recomendado)
+### Local development with one command (recommended)
 ```powershell
 npm run dev
 ```
-Levanta MySQL (docker), compila los estilos, arranca Jetty y abre un proxy **BrowserSync** con auto-reload:
+Starts MySQL (docker), compiles the styles, launches Jetty and opens a **BrowserSync** proxy with auto-reload:
 
-- **Estilos (CSS/Tailwind)**: el watcher de Vite regenera `dist/main.css` al guardar
-- **Plantillas Thymeleaf**: se actualizan en vivo (cache off)
-- **El browser se recarga solo** ✨ — entrá por **http://localhost:3000/spring** (sin F5)
+- **Styles (CSS/Tailwind)**: the Vite watcher regenerates `dist/main.css` on save
+- **Thymeleaf templates**: update live (cache off)
+- **The browser reloads itself** ✨ — enter through **http://localhost:3000/spring** (no F5 needed)
 
-Los cambios en **Java** requieren reiniciar: `Ctrl+C` y volver a correr `npm run dev`.
-`Ctrl+C` apaga todo: watch, Jetty, BrowserSync y MySQL. En el primer arranque
-instala las dependencias del frontend solo. El puerto directo
-http://localhost:8080/spring sigue disponible si querés ver la app sin el proxy.
+Changes in **Java** require a restart: `Ctrl+C` and run `npm run dev` again.
+`Ctrl+C` shuts everything down: watch, Jetty, BrowserSync and MySQL. On the first
+run it installs the frontend dependencies by itself. The direct port
+http://localhost:8080/spring is still available if you prefer to see the app without the proxy.
 
-### Paso a paso (sin el orquestador)
+### Step by step (without the orchestrator)
 ```shell
-# Generar los estilos una sola vez (dist/ está ignorado por git; el plugin Maven
-# solo compila en prepare-package): mvn package  o  cd src/main/frontend && npm ci && npm run build
+# Generate the styles once (dist/ is ignored by git; the Maven plugin
+# only builds at prepare-package): mvn package  or  cd src/main/frontend && npm ci && npm run build
 
-# Levantamos un BBDD con docker
+# Start a database with docker
 docker build -f DockerfileSQL -t mysql .
 docker run --env-file .env --name tallerwebi-mysql -d -p 3306:3306 mysql
 
-# Iniciamos el proyecto
+# Start the project
 $ mvn clean jetty:run
 # http://localhost:8080/spring
 ```
 ## 2. Thymeleaf
-* [Documentación](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
+* [Documentation](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html)
 
 ## 3. Hamcrest
-* [Documentación](https://hamcrest.org/JavaHamcrest/javadoc/2.2/)
+* [Documentation](https://hamcrest.org/JavaHamcrest/javadoc/2.2/)
 
 ## 4. GitHub Actions
-* [Documentación](https://docs.github.com/es/actions/quickstart)
+* [Documentation](https://docs.github.com/en/actions/quickstart)
 
 ## 5. Playwright
-* [Documentación](https://playwright.dev/java/docs/intro)
+* [Documentation](https://playwright.dev/java/docs/intro)
 
 ## 6. Jetty
-* [Documentación](https://eclipse.dev/jetty/documentation/jetty-12/)
+* [Documentation](https://eclipse.dev/jetty/documentation/jetty-12/)
 
-## 7. ¿Cómo correr las pruebas de punta a punta?
+## 7. How to run the end-to-end tests?
 
-### Iniciar el servidor
-> Antes de levantar el servidor hay que generar la hoja de estilos del frontend la primera vez (ver la nota de la sección 1).
+### Start the server
+> Before starting the server, generate the frontend stylesheet the first time (see the note in section 1).
 ```shell
-# Opción 1
+# Option 1
 $ mvn clean jetty:run
 
-# Opción 2 -- ver seccion 10 docker-compose
+# Option 2 -- see section 10 docker-compose
 $ docker-compose up --build
 ```
-### Correr las pruebas en otra terminal
+### Run the tests in another terminal
 ```shell
-$ mvn test -Dtest="VistaLoginE2E"
-$ mvn test -Dtest="VistaLoginE2E#deberiaNavegarAlHomeSiElUsuarioExiste"
+$ mvn test -Dtest="LoginViewE2E"
+$ mvn test -Dtest="LoginViewE2E#shouldNavigateToHomeWhenUserExists"
 ```
 
-> **Nota (contrato UI):** las E2E dependen de que las vistas renderizadas conserven los `id`/`name` que usan sus selectores (`#email`, `#password`, `#btn-login`, `#btn-registrarme`, `#btn-register`, `nav a.navbar-brand` y el mensaje de error "Error Usuario o clave incorrecta"). El frontend (Vite/Tailwind) solo aporta estilos (CSS) a esas vistas sin alterar ese contrato.
+> **Note (UI contract):** the E2E tests depend on the rendered views keeping the `id`/`name` values their selectors use (`#email`, `#password`, `#btn-login`, `#btn-register`, `nav a.navbar-brand` and the error message "Invalid email or password"). The frontend (Vite/Tailwind) only provides styles (CSS) to those views without changing that contract.
 
-## 8. ¿Cómo compilar los estilos?
-El frontend es **solo estilos (CSS)**: Thymeleaf renderiza todo el HTML y toda la lógica vive en Java. Vite + Tailwind actúan únicamente como herramientas de **build-time** que generan una hoja de estilos. Se compila desde la carpeta `src/main/frontend`:
+## 8. How to compile the styles?
+The frontend is **styles only (CSS)**: Thymeleaf renders all HTML and all logic lives in Java. Vite + Tailwind act only as **build-time** tools that generate a stylesheet. Compile from the `src/main/frontend` folder:
 ```shell
 $ cd src/main/frontend
-# Si es la primera vez debo descargar e instalar las dependencias
+# If it is the first time, download and install the dependencies
 $ npm ci
-# Genero la hoja de estilos (CSS ONLY, sin JS)
+# Generate the stylesheet (CSS ONLY, no JS)
 $ npm run build
 ```
-Esto produce `src/main/webapp/resources/core/dist/main.css` (solo CSS; no se emite JavaScript). El frontend solo **renderiza**; no hay lógica de validación en el cliente.
+This produces `src/main/webapp/resources/core/dist/main.css` (CSS only; no JavaScript is emitted). The frontend only **renders**; there is no client-side validation logic.
 
-> Para desarrollo con **recarga automática** (estilos + plantillas + BrowserSync sin F5), `npm run dev` ya se encarga de todo (sección 1): no hace falta correr estos comandos a mano.
+> For development with **automatic reload** (styles + templates + BrowserSync, no F5), `npm run dev` already handles everything (section 1): you do not need to run these commands by hand.
 
-> **Nota (pirámide de tests):** `mvn test` ejecuta las suites de pruebas Java (unitarias + integración MockMvc con Spring Test) y **no** requiere Node. El frontend solo se compila en la fase de empaquetado (`mvn package`, vía `frontend-maven-plugin`). Las pruebas E2E (Playwright) se invocan bajo demanda con los comandos de la sección 7 y requieren MySQL en el puerto 3306 y la aplicación levantada.
+> **Note (test pyramid):** `mvn test` runs the Java test suites (unit + MockMvc integration with Spring Test) and does **not** require Node. The frontend only builds in the packaging phase (`mvn package`, via `frontend-maven-plugin`). The E2E tests (Playwright) are invoked on demand with the section 7 commands and require MySQL on port 3306 and the application up and running.
 
 ## 9. Docker:
-Los archivos de docker de este proyecto estan preparados para desplegar un archivo WAR usando el servidor Jetty o Tomcat.
-El archivo de docker para Jetty y Tomcat esperan que el archivo WAR se debe llamar "tallerwebi-base-1.0-SNAPSHOT" para eso debemos modificar los atributos <artifactId> y <version> del archivo pom.xml. 
+The docker files in this project are set up to deploy a WAR file using the Jetty or Tomcat server.
+The docker files for Jetty and Tomcat expect the WAR file to be named "tallerwebi-base-1.0-SNAPSHOT"; for that, modify the <artifactId> and <version> attributes in the pom.xml file.
 
-Para generar un archivo WAR debemos ejecutar maven.
+To generate a WAR file, run maven.
 ```shell
 mvn clean package
 ```
 
-Una vez que tenemos el archivo WAR, debemos generar la imagen de docker.
+Once we have the WAR file, generate the docker image.
 ```shell
 docker build -f DockerfileJetty -t tallerwebi .
 docker build -f DockerfileTomcat -t tallerwebi .
 ```
 
-Una vez que tenemos la imagen generada, podemos instanciar un contenedor y ejecutarlo.
+Once the image is generated, we can instantiate a container and run it.
 ```shell
 docker run -p 8080:8080 tallerwebi
 ```
 
-### 9.1 Comandos básicos
+### 9.1 Basic commands
 ```shell
-# Crear una imagen con el nombre "tallerwebi".
+# Create an image named "tallerwebi".
 docker build -f DockerfileJetty -t tallerwebi .
 
-# Instancia y ejecuta un contendor en base a la imagen "tallerwebi". 
+# Instantiate and run a container from the "tallerwebi" image.
 docker run -p 8080:8080 tallerwebi 
 
-# Ejecuta un contendor ya instanciado.
+# Run an already instantiated container.
 docker start <containerId> 
 
-# Instancia un contendor en base a la imagen tallerwebi para ejecutar bash.
+# Instantiate a container from the tallerwebi image to run bash.
 docker run -it --entrypoint /bin/bash tallerwebi
 
-# Muestra los logs.
+# Show the logs.
 docker logs <containerId>
 
-# Muestra todos los contenedores corriendo.
+# Show all running containers.
 docker ps
 
-# Muestra todos los contenedores creados (o existentes).
+# Show all created (or existing) containers.
 docker ps -a 
 
-# Muestra todas las imágenes creadas.
+# Show all created images.
 docker images
 
-# Elimina un contenedor.
+# Remove a container.
 docker rm <containerId>
 
-# Elimina una imagen.
+# Remove an image.
 docker rmi <imageId>
 
-# Crear una imagen con el nombre "mysql".
+# Create an image named "mysql".
 docker build -f DockerfileSQL -t mysql .
 
-# Instancia un contendor en base a la imagen mysql.
+# Instantiate a container from the mysql image.
 docker run --env-file .env --name tallerwebi-mysql -d -p 3306:3306 mysql # sudo apt install mysql-client
 ```
 
 ## 10. docker-compose
-Docker Compose es una herramienta que permite definir y ejecutar aplicaciones multi-contenedor usando archivos YAML. Simplifica la gestión de múltiples servicios y sus dependencias, permitiendo orquestar todo el stack de la aplicación con un solo comando.
+Docker Compose is a tool that lets you define and run multi-container applications using YAML files. It simplifies managing multiple services and their dependencies, letting you orchestrate the whole application stack with a single command.
 
 ```shell
 mvn clean package
-# Invoco a docker-compose para que me genere contenedores de todos los servicios especificadas
+# Invoke docker-compose to create containers for all the specified services
 docker-compose up --build
 
-# Invoco a docker para que elimine los contenedores creados
-# --rmi local indica que debe borrar los volumenes 
+# Invoke docker to remove the created containers
+# --rmi local means it must also remove the volumes
 docker-compose down --rmi local
 ```
-## 11. Comandos de Maven
-Para ejecutar comandos de Maven, ya sea en el terminal integrado al IDE, o en otro terminal como el de Linux o Windows (CMD), se debe utilizar el comando principal `mvn` seguido del comando o fase del ciclo de vida a ejecutar. Ejemplo: `mvn clean`.
+## 11. Maven commands
+To run Maven commands, either in the IDE's integrated terminal or in another terminal like Linux or Windows (CMD), use the main `mvn` command followed by the command or lifecycle phase to execute. Example: `mvn clean`.
 
-> Maven ejecuta todas las fases anteriores a la fase del ciclo de vida indicada.
+> Maven runs all the phases prior to the lifecycle phase you specify.
 
-### Comandos:
+### Commands:
 ```shell
-# Es un comando. Limpia el directorio target (contiene JARs o WARs generados) de la compilación anterior 
+# It is a command. Cleans the target directory (containing generated JARs or WARs) from the previous build
 mvn clean
 
-# -> Fases en orden de ejecución <-
+# -> Phases in execution order <-
 
-# Valida que el proyecto sea correcto y que toda la información necesaria este disponible
+# Validates that the project is correct and that all the required information is available
 mvn validate
 
-# Compila el código fuente del proyecto (tambien descarga dependencias)
+# Compiles the project source code (also downloads dependencies)
 mvn compile
 
-# Ejecuta las suites de pruebas Java (unitarias + integración MockMvc)
+# Runs the Java test suites (unit + MockMvc integration)
 mvn test
 
-# Empaqueta el código compilado en un archivo JAR o WAR (tambien descarga dependencias y construye el bundle del frontend con Vite)
+# Packages the compiled code into a JAR or WAR file (also downloads dependencies and builds the frontend bundle with Vite)
 mvn package
 
-# Verifica que el paquete es válido y cumple los criterios de calidad
+# Verifies that the package is valid and meets the quality criteria
 mvn verify
 
-# Instala el paquete en el repositorio local de Maven
+# Installs the package into the local Maven repository
 mvn install
 
-# Sube el artefacto a un repositorio remoto (que se debe definir en el archivo pom.xml) para que pueda distribuirse a otros equipos, desarrolladores, o bien, para desplegar (fin de la etapa de construcción)
+# Uploads the artifact to a remote repository (which must be defined in the pom.xml file) so it can be distributed to other teams or developers, or deployed (end of the build stage)
 mvn deploy
 
-# El comando 'clean' es combinable con las fases 
+# The 'clean' command can be combined with the phases
 mvn clean package
 
-# Es el comando quizas mas ejecutado. Las dependencias se descargan al ejecutar un comando de construcción como 'compile' o 'package' ('install' las incluye, tambien las validaciones y la ejecución de las pruebas). 
+# Possibly the most run command. Dependencies are downloaded when running a build command like 'compile' or 'package' ('install' includes them, plus validations and test runs).
 mvn clean install
 
 ```
 
-## 12. Herramientas de Calidad de Código
-El proyecto integra varias herramientas para asegurar que el código sea limpio, mantenible y libre de errores comunes. Estas herramientas se ejecutan automáticamente durante el ciclo de vida de Maven.
+## 12. Code Quality Tools
+The project integrates several tools to ensure the code is clean, maintainable and free of common mistakes. These tools run automatically during the Maven lifecycle.
 
-### Resumen de Herramientas
+### Tools Overview
 
-| Herramienta | Función Principal | Rol en el Proyecto | Ubicación Reporte |
+| Tool | Main Function | Role in the Project | Report Location |
 | :--- | :--- | :--- | :--- |
-| **Prettier** | **Formateo Automático** | Define la estética (espacios, llaves, indentación). Se encarga del "look". | N/A (Aplica cambios) |
-| **Checkstyle** | **Convenciones y Estructura** | Valida nombres de variables, presencia de Javadocs e importaciones. | `.calidad-de-codigo/checkstyle/` |
-| **PMD** | **Lógica y Buenas Prácticas** | Detecta errores potenciales, variables no usadas y optimizaciones. | `.calidad-de-codigo/pmd/` |
-| **CPD** | **Detección de Duplicados** | Encuentra bloques de código copiados y pegados (Copy-Paste). | `.calidad-de-codigo/cpd/` |
-| **JaCoCo** | **Cobertura de Tests** | Mide qué porcentaje del código está cubierto por pruebas (>80%). | `.calidad-de-codigo/jacoco/` |
+| **Prettier** | **Automatic Formatting** | Defines the aesthetics (spaces, braces, indentation). It handles the "look". | N/A (Applies changes) |
+| **Checkstyle** | **Conventions and Structure** | Validates variable names, Javadoc presence and imports. | `.code-quality/checkstyle/` |
+| **PMD** | **Logic and Best Practices** | Detects potential errors, unused variables and optimizations. | `.code-quality/pmd/` |
+| **CPD** | **Duplicate Detection** | Finds copied and pasted code blocks (Copy-Paste). | `.code-quality/cpd/` |
+| **JaCoCo** | **Test Coverage** | Measures what percentage of the code is covered by tests (>80%). | `.code-quality/jacoco/` |
 
 ---
 
 ### PMD (Static Code Analyzer)
-Analiza el código Java en busca de problemas de diseño, variables no utilizadas, optimizaciones faltantes y malas prácticas.
-* **Se ejecuta en:** Fase `validate` (chequeo) y fase `test` (regeneración de reportes).
-* **Configuración:** Utiliza `pmd-reglas-de-codigo.xml`.
-* **Comandos:**
-  * `mvn pmd:check`: Valida las reglas y falla si hay errores.
-  * `mvn pmd:pmd`: Genera el reporte visual en `.calidad-de-codigo/pmd/pmd.html`.
-* **Reportes:** Todos los resultados (XML e HTML) se guardan en la carpeta `.calidad-de-codigo/pmd/` en la raíz del proyecto.
-* **Ejemplo de fallo:** Crear una variable con un nombre muy corto (ej: `int x = 0;`) o tener un método con una complejidad ciclomática superior a 10.
-* **Documentación:** [PMD Official Site](https://pmd.github.io/)
+Analyzes Java code for design issues, unused variables, missing optimizations and bad practices.
+* **Runs in:** `validate` phase (check) and `test` phase (report regeneration).
+* **Configuration:** Uses `pmd-code-rules.xml`.
+* **Commands:**
+  * `mvn pmd:check`: Validates the rules and fails on violations.
+  * `mvn pmd:pmd`: Generates the visual report at `.code-quality/pmd/pmd.html`.
+* **Reports:** All results (XML and HTML) are saved in the `.code-quality/pmd/` folder at the project root.
+* **Failure example:** Creating a variable with a very short name (e.g. `int x = 0;`) or having a method with cyclomatic complexity above 10.
+* **Documentation:** [PMD Official Site](https://pmd.github.io/)
 
 ### CPD (Copy-Paste Detector)
-Es una extensión de PMD que detecta bloques de código duplicados (copy-paste) en el proyecto.
-* **Se ejecuta en:** Fase `validate` (chequeo) y fase `test` (generación de reporte).
-* **Comandos:**
-  * `mvn pmd:cpd-check`: Valida duplicados y falla si los encuentra.
-  * `mvn pmd:cpd`: Genera el reporte de duplicados en `.calidad-de-codigo/cpd/cpd.html`.
-* **Reportes:** Todos los resultados (XML e HTML) se guardan en la carpeta `.calidad-de-codigo/cpd/` en la raíz del proyecto.
-* **Ejemplo de fallo:** Copiar y pegar un bloque de lógica idéntico en dos controladores diferentes en lugar de abstraerlo en un servicio.
-* **Documentación:** [CPD Documentation](https://pmd.github.io/latest/pmd_userdocs_cpd.html)
+An extension of PMD that detects duplicated (copy-paste) code blocks in the project.
+* **Runs in:** `validate` phase (check) and `test` phase (report generation).
+* **Commands:**
+  * `mvn pmd:cpd-check`: Validates duplicates and fails if it finds any.
+  * `mvn pmd:cpd`: Generates the duplicates report at `.code-quality/cpd/cpd.html`.
+* **Reports:** All results (XML and HTML) are saved in the `.code-quality/cpd/` folder at the project root.
+* **Failure example:** Copying and pasting an identical logic block into two different controllers instead of abstracting it into a service.
+* **Documentation:** [CPD Documentation](https://pmd.github.io/latest/pmd_userdocs_cpd.html)
 
 ### Checkstyle
-Verifica que el código siga estándares de formato y estilo (basado en la guía de Google). Se enfoca en la estética y estructura del código.
-* **Se ejecuta en:** Fase `validate`.
-* **Configuración:** Utiliza `checkstyle-base.xml`. Este archivo es una configuración personalizada que hereda de Google Style pero **desactiva las reglas de formateo** (indentación, espacios, llaves) para evitar conflictos con Prettier, enfocándose únicamente en convenciones de nombres, Javadocs e importaciones.
-* **Comandos:**
-  * `mvn checkstyle:check`: Valida el estilo y falla si hay errores.
-  * `mvn checkstyle:checkstyle`: Genera el reporte visual en `.calidad-de-codigo/checkstyle/checkstyle.html`.
-* **Reportes:** Todos los resultados (XML e HTML) se guardan en la carpeta `.calidad-de-codigo/checkstyle/` en la raíz del proyecto.
-* **Ejemplo de fallo:** Uso de nombres de variables incorrectos (ej: `int MiVariable`), falta de Javadoc en clases públicas o importaciones con asterisco (`import java.util.*`).
-* **Documentación:** [Checkstyle Google Style](https://checkstyle.sourceforge.io/google_style.html)
+Verifies that the code follows formatting and style standards (based on the Google guide). It focuses on the aesthetics and structure of the code.
+* **Runs in:** `validate` phase.
+* **Configuration:** Uses `checkstyle-base.xml`. This file is a custom configuration that inherits from Google Style but **disables the formatting rules** (indentation, spaces, braces) to avoid conflicts with Prettier, focusing only on naming conventions, Javadocs and imports.
+* **Commands:**
+  * `mvn checkstyle:check`: Validates the style and fails on violations.
+  * `mvn checkstyle:checkstyle`: Generates the visual report at `.code-quality/checkstyle/checkstyle.html`.
+* **Reports:** All results (XML and HTML) are saved in the `.code-quality/checkstyle/` folder at the project root.
+* **Failure example:** Using incorrect variable names (e.g. `int MiVariable`), missing Javadoc on public classes, or star imports (`import java.util.*`).
+* **Documentation:** [Checkstyle Google Style](https://checkstyle.sourceforge.io/google_style.html)
 
 ### Prettier (Maven Plugin)
-Formatea automáticamente el código Java para que cumpla con las reglas de estilo.
-* **Se ejecuta en:** Fase `process-sources` (antes de compilar).
-* **Comandos:**
-  * `mvn prettier:write`: Formatea y sobreescribe los archivos con el estilo correcto.
-  * `mvn prettier:check`: Solo verifica si el código cumple el formato sin modificar archivos.
-* **Función:** Reescribe tus archivos `.java` para corregir la indentación y el formato automáticamente al ejecutar `mvn test` o `mvn compile`.
-* **Documentación:** [Prettier Java](https://github.com/jhipster/prettier-java)
+Automatically formats Java code so it complies with the style rules.
+* **Runs in:** `process-sources` phase (before compiling).
+* **Commands:**
+  * `mvn prettier:write`: Formats and overwrites the files with the correct style.
+  * `mvn prettier:check`: Only verifies that the code complies with the format without modifying files.
+* **Function:** Rewrites your `.java` files to fix indentation and formatting automatically when running `mvn test` or `mvn compile`.
+* **Documentation:** [Prettier Java](https://github.com/jhipster/prettier-java)
 
-### Frontend / estilos (Vite + Tailwind)
-El frontend se limita a estilos (CSS): no hay linter de JavaScript ni TypeScript, ya que el cliente no ejecuta lógica propia (todo vive en Java). La única tarea del frontend es `npm run build` (Vite + Tailwind) que genera la hoja de estilos `main.css` desde `src/main/frontend`. A diferencia de Prettier, Checkstyle, PMD, CPD y JaCoCo, se ejecuta con npm y no en las fases de Maven.
+### Frontend / styles (Vite + Tailwind)
+The frontend is limited to styles (CSS): there is no JavaScript or TypeScript linter, since the client does not run its own logic (everything lives in Java). The only frontend task is `npm run build` (Vite + Tailwind), which generates the `main.css` stylesheet from `src/main/frontend`. Unlike Prettier, Checkstyle, PMD, CPD and JaCoCo, it runs with npm and not in the Maven phases.
 
 ### JaCoCo (Code Coverage)
-Mide qué porcentaje del código fuente está cubierto por las pruebas unitarias.
-* **Se ejecuta en:** Fase `test`.
-* **Configuración:** Requiere un mínimo de 80% de cobertura en líneas (excluyendo configuraciones).
-* **Comandos:**
-  * `mvn jacoco:report`: Genera el reporte visual en `.calidad-de-codigo/jacoco/index.html`.
-* **Reportes:** Todos los resultados (binarios e HTML) se guardan en la carpeta `.calidad-de-codigo/jacoco/` en la raíz del proyecto.
-* **Ejemplo de fallo:** Si los tests cubren menos del 80% de las líneas de lógica de negocio, el build fallará durante la verificación.
-* **Documentación:** [JaCoCo Official Site](https://www.jacoco.org/jacoco/)
+Measures what percentage of the source code is covered by the unit tests.
+* **Runs in:** `test` phase.
+* **Configuration:** Requires a minimum of 80% line coverage (excluding configurations).
+* **Commands:**
+  * `mvn jacoco:report`: Generates the visual report at `.code-quality/jacoco/index.html`.
+* **Reports:** All results (binary and HTML) are saved in the `.code-quality/jacoco/` folder at the project root.
+* **Failure example:** If the tests cover less than 80% of the business logic lines, the build fails during verification.
+* **Documentation:** [JaCoCo Official Site](https://www.jacoco.org/jacoco/)
 
-#### Comando para generar reporte fresco:
-Como los resultados se guardan en una carpeta personalizada fuera de `target`, se recomienda borrar los resultados anteriores para asegurar que la métrica sea actual:
+#### Command to generate a fresh report:
+Since the results are saved in a custom folder outside `target`, it is recommended to delete the previous results to make sure the metric is current:
 
-**En Linux / macOS / Git Bash:**
+**On Linux / macOS / Git Bash:**
 ```shell
-rm -rf .calidad-de-codigo/jacoco && mvn clean test
+rm -rf .code-quality/jacoco && mvn clean test
 ```
 
-**En Windows (PowerShell):**
+**On Windows (PowerShell):**
 ```powershell
-Remove-Item -Recurse -Force .calidad-de-codigo/jacoco; mvn clean test
+Remove-Item -Recurse -Force .code-quality/jacoco; mvn clean test
 ```
 
-**En Windows (CMD):**
+**On Windows (CMD):**
 ```cmd
-rd /s /q .calidad-de-codigo\jacoco & mvn clean test
+rd /s /q .code-quality\jacoco & mvn clean test
 ```
 
-## Estructura del proyecto
+## Project structure
 
 ```
 src/main/java/com/tallerwebi/
-├── config/           # Configuración de Spring (web, JPA, seguridad, validación, entorno)
-├── dominio/          # Lógica de negocio (servicios, modelos, excepciones)
-├── infraestructura/  # Persistencia (repositorios Spring Data JPA)
-└── presentacion/     # Controladores MVC, DTOs y manejo global de excepciones
+├── config/           # Spring configuration (web, JPA, security, validation, environment)
+├── domain/           # Business logic (services, models, exceptions)
+├── infrastructure/   # Persistence (Spring Data JPA repositories)
+└── presentation/     # MVC controllers, DTOs and global exception handling
 
 src/main/webapp/
-├── WEB-INF/views/thymeleaf/   # Plantillas Thymeleaf (fragments + vistas)
-└── resources/core/dist/       # CSS compilado (Vite + Tailwind) — ignorado por git
+├── WEB-INF/views/thymeleaf/   # Thymeleaf templates (fragments + views)
+└── resources/core/dist/       # Compiled CSS (Vite + Tailwind) — ignored by git
 
-src/main/frontend/     # Build de estilos (Vite + Tailwind, CSS-only)
-src/test/java/         # Pruebas unitarias e de integración (JUnit, MockMvc, JPA, Playwright)
+src/main/frontend/     # Style build (Vite + Tailwind, CSS-only)
+src/test/java/         # Unit and integration tests (JUnit, MockMvc, JPA, Playwright)
 
-docker-compose.yml    # Stack local: mysql (dev) + jetty-app (app dockerizada)
-DockerfileJetty       # Imagen Jetty multi-stage (compila el WAR dentro de la imagen)
-DockerfileSQL         # Imagen MySQL (schema + seed los inicializa la app al bootear)
+docker-compose.yml    # Local stack: mysql (dev) + jetty-app (dockerized app)
+DockerfileJetty       # Jetty multi-stage image (compiles the WAR inside the image)
+DockerfileSQL         # MySQL image (schema + seed initialized by the app at boot)
 ```
 
-**Regla de oro:** el frontend SOLO renderiza con Thymeleaf + Tailwind; TODA la lógica
-de negocio vive en Java (dominio/servicios).
+**Golden rule:** the frontend ONLY renders with Thymeleaf + Tailwind; ALL business
+logic lives in Java (domain/services).
 
-## Tecnologías:
+## Technologies:
 * Docker
 * Java 25 (LTS)
 * Spring 6.2.19
@@ -372,10 +372,10 @@ de negocio vive en Java (dominio/servicios).
 * Thymeleaf 3.1.5.RELEASE (spring6)
 * Embedded Jetty Server EE10 12.0.37
 * Servlet API (Jakarta) 6.0.0
-* Vite 8 + Tailwind CSS 4 (solo estilos en build-time; genera `src/main/webapp/resources/core/dist/main.css`, CSS ONLY, sin JavaScript)
+* Vite 8 + Tailwind CSS 4 (styles only at build-time; generates `src/main/webapp/resources/core/dist/main.css`, CSS ONLY, no JavaScript)
 * IntelliJ IDEA | VS Code
-* Maven 3.9+ (sobre JDK 25)
-* frontend-maven-plugin 2.0.2 (descarga Node v24.7.0 en `target/` para construir el frontend)
+* Maven 3.9+ (on JDK 25)
+* frontend-maven-plugin 2.0.2 (downloads Node v24.7.0 into `target/` to build the frontend)
 * Spring Test 6.2.19
 * Hamcrest 2.2
 * JUnit 6.1.2
@@ -387,6 +387,6 @@ de negocio vive en Java (dominio/servicios).
 * Checkstyle 13.8.0 (plugin 3.6.0, Google Style)
 * Prettier Maven Plugin 0.22 (Prettier-Java 2.5.0)
 * JaCoCo 0.8.15
-* Node v24.7.0 (el `frontend-maven-plugin` lo descarga automáticamente en `target/`; instalar Node manualmente es opcional, solo útil para compilar los estilos del frontend directamente)
+* Node v24.7.0 (`frontend-maven-plugin` downloads it automatically into `target/`; installing Node manually is optional, only useful for compiling the frontend styles directly)
 
-*_Proyecto modificado en base a: [Spring MVC hello world example (Maven and Thymeleaf)](https://mkyong.com/spring-mvc/spring-mvc-hello-world-example/) _*
+*_Project modified based on: [Spring MVC hello world example (Maven and Thymeleaf)](https://mkyong.com/spring-mvc/spring-mvc-hello-world-example/) _*

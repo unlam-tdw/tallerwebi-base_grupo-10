@@ -117,21 +117,21 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Cifrado de contraseñas con BCrypt -->
+        <!-- Password encryption with BCrypt -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
             <version>6.5.11</version>
         </dependency>
 
-        <!-- Validación de formularios con Bean Validation (Jakarta) -->
+        <!-- Form validation with Bean Validation (Jakarta) -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>8.0.5.Final</version>
         </dependency>
 
-        <!-- Implementación de EL requerida por Hibernate Validator para interpolar mensajes -->
+        <!-- EL implementation required by Hibernate Validator to interpolate messages -->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
@@ -167,9 +167,9 @@
                 </configuration>
             </plugin>
 
-            <!-- Build del frontend (Vite) durante la compilación.
-                 Node/npm se resuelven desde el PATH (ya disponibles en este entorno);
-                 el dist generado queda en src/main/webapp/resources/core/dist y entra al WAR. -->
+            <!-- Frontend build (Vite) during compilation.
+                 Node/npm are resolved from the PATH (already available in this environment);
+                 the generated dist stays in src/main/webapp/resources/core/dist and ships in the WAR. -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
@@ -212,14 +212,14 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin para ejecutar las pruebas -->
+            <!-- Plugin to run the tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
 
                 <configuration>
-                    <!-- Configuración específica para las pruebas -->
+                    <!-- Test-specific configuration -->
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -233,17 +233,17 @@
                 <configuration>
                     <!-- Prettier-Java documentation: https://github.com/jhipster/prettier-java -->
                     <prettierJavaVersion>2.5.0</prettierJavaVersion>
-                    <!-- Longitud máxima de línea (100) alineada con el estándar de Google Checkstyle -->
+                    <!-- Maximum line length (100) aligned with Google Checkstyle -->
                     <printWidth>100</printWidth>
                 </configuration>
                 <executions>
                     <execution>
                         <id>format-code</id>
-                        <!-- Se ejecuta en la fase 'process-sources' para formatear automáticamente 
-                             el código antes de la compilación y los tests -->
+                        <!-- Runs in the 'process-sources' phase to format the code automatically
+                             before compilation and tests -->
                         <phase>process-sources</phase>
                         <goals>
-                            <!-- El objetivo 'write' sobreescribe los archivos con el formato correcto -->
+                            <!-- The 'write' goal rewrites files with the correct format -->
                             <goal>write</goal>
                         </goals>
                     </execution>
@@ -255,7 +255,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
                 <dependencies>
-                    <!-- Version del runtime de Checkstyle (soporta Java 25 / JEP 512) -->
+                    <!-- Checkstyle runtime version (Java 25 / JEP 512 support) -->
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
@@ -263,36 +263,35 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <!-- Ubicación del archivo de configuración personalizado (basado en Google Style pero compatible con Prettier) -->
+                    <!-- Location of the custom config file (Google Style based but Prettier-friendly) -->
                     <configLocation>${project.basedir}/checkstyle-base.xml</configLocation>
-                    <!-- Version del runtime de Checkstyle (soporta Java 25 / JEP 512) -->
+                    <!-- Checkstyle runtime version (Java 25 / JEP 512 support) -->
                     <checkstyleVersion>${checkstyle.runtime.version}</checkstyleVersion>
-                    <!-- Mostrar los errores de reglas directamente en la consola -->
+                    <!-- Print style rule violations directly to the console -->
                     <consoleOutput>true</consoleOutput>
-                    <!-- Detener el build si se encuentra algun error de las reglas de estilo -->
+                    <!-- Fail the build on any style rule violation -->
                     <failsOnError>true</failsOnError>
-                    <!-- No generar enlaces a reportes XRef (útil para reportes HTML detallados) -->
+                    <!-- Skip XRef links (keeps detailed HTML reports sane) -->
                     <linkXRef>false</linkXRef>
-                    <!-- Directorio donde se generan los reportes visuales (HTML) -->
-                    <outputDirectory>${project.basedir}/.calidad-de-codigo/checkstyle</outputDirectory>
+                    <!-- Directory where the visual reports (HTML) are generated -->
+                    <outputDirectory>${project.basedir}/.code-quality/checkstyle</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- Identificador único para esta ejecución del plugin -->
+                        <!-- Unique identifier for this plugin execution -->
                         <id>validate</id>
-                        <!-- Fase del ciclo de vida de Maven en la que se ejecutará (validación inicial) -->
+                        <!-- Maven lifecycle phase in which it runs (initial validation) -->
                         <phase>validate</phase>
                         <goals>
-                            <!-- Ejecuta la verificación (check) de las reglas de estilo. 
-                                 Si falla, el build se detendrá según la configuración anterior -->
+                            <!-- Runs the style check. If it fails, the build stops per the config above -->
                             <goal>check</goal>
-                            <!-- Genera el reporte visual (HTML) durante la validación -->
+                            <!-- Generates the visual report (HTML) during validation -->
                             <goal>checkstyle</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>checkstyle-report</id>
-                        <!-- Fase del ciclo de vida para generar reportes durante las pruebas -->
+                        <!-- Lifecycle phase to generate reports during tests -->
                         <phase>test</phase>
                         <goals>
                             <goal>checkstyle</goal>
@@ -306,55 +305,55 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.28.0</version>
                 <configuration>
-                    <!-- Mostrar los errores de reglas directamente en la consola de Maven -->
+                    <!-- Print rule violations directly on the Maven console -->
                     <printFailingErrors>true</printFailingErrors>
-                    <!-- No generar enlaces a reportes XRef (referencias cruzadas del código) -->
+                    <!-- Skip XRef links (code cross references) -->
                     <linkXRef>false</linkXRef>
                     <rulesets>
-                        <!-- Conjuntos de reglas a aplicar (estándar y personalizados) -->
+                        <!-- Rule sets to apply (standard and custom) -->
                         <ruleset>/category/java/bestpractices.xml</ruleset>
                         <ruleset>/category/java/errorprone.xml</ruleset>
-                        <ruleset>${project.basedir}/pmd-reglas-de-codigo.xml</ruleset>
+                        <ruleset>${project.basedir}/pmd-code-rules.xml</ruleset>
                     </rulesets>
                 </configuration>
                 <executions>
-                    <!-- Ejecución unificada de PMD (Análisis de reglas) -->
+                    <!-- Unified PMD execution (rule analysis) -->
                     <execution>
-                        <!-- Identificador único de la ejecución -->
+                        <!-- Unique identifier for this execution -->
                         <id>pmd-all</id>
-                        <!-- Fase del ciclo de vida de Maven en la que se ejecuta (validación inicial) -->
+                        <!-- Maven lifecycle phase in which it runs (initial validation) -->
                         <phase>validate</phase>
                         <goals>
-                            <!-- Genera el reporte PMD (necesario para el check) -->
+                            <!-- Generates the PMD report (required for the check) -->
                             <goal>pmd</goal>
-                            <!-- Valida los resultados contra las reglas definidas y falla si hay errores -->
+                            <!-- Validates results against the defined rules and fails on violations -->
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <!-- Directorio donde se guarda el archivo XML de resultados para la validación -->
-                            <targetDirectory>${project.basedir}/.calidad-de-codigo/pmd</targetDirectory>
-                            <!-- Directorio donde se generan los reportes visuales (HTML) y sus recursos (CSS/imágenes) -->
-                            <outputDirectory>${project.basedir}/.calidad-de-codigo/pmd</outputDirectory>
+                            <!-- Directory for the results XML file used by the validation -->
+                            <targetDirectory>${project.basedir}/.code-quality/pmd</targetDirectory>
+                            <!-- Directory for the visual reports (HTML) and their assets (CSS/images) -->
+                            <outputDirectory>${project.basedir}/.code-quality/pmd</outputDirectory>
                         </configuration>
                     </execution>
 
-                    <!-- Ejecución unificada de CPD (Detección de duplicados) -->
+                    <!-- Unified CPD execution (duplicate detection) -->
                     <execution>
-                        <!-- Identificador único de la ejecución -->
+                        <!-- Unique identifier for this execution -->
                         <id>cpd-all</id>
-                        <!-- Fase del ciclo de vida de Maven en la que se ejecuta (validación inicial) -->
+                        <!-- Maven lifecycle phase in which it runs (initial validation) -->
                         <phase>validate</phase>
                         <goals>
-                            <!-- Genera el reporte CPD de duplicados -->
+                            <!-- Generates the CPD duplicate report -->
                             <goal>cpd</goal>
-                            <!-- Valida los duplicados encontrados y falla si superan el umbral -->
+                            <!-- Validates found duplicates and fails above the threshold -->
                             <goal>cpd-check</goal>
                         </goals>
                         <configuration>
-                            <!-- Directorio donde se guarda el archivo XML de duplicados para la validación -->
-                            <targetDirectory>${project.basedir}/.calidad-de-codigo/cpd</targetDirectory>
-                            <!-- Directorio donde se generan los reportes visuales de duplicados (HTML) -->
-                            <outputDirectory>${project.basedir}/.calidad-de-codigo/cpd</outputDirectory>
+                            <!-- Directory for the duplicates XML file used by the validation -->
+                            <targetDirectory>${project.basedir}/.code-quality/cpd</targetDirectory>
+                            <!-- Directory for the visual duplicates reports (HTML) -->
+                            <outputDirectory>${project.basedir}/.code-quality/cpd</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -364,10 +363,10 @@
                             <goal>pmd</goal>
                         </goals>
                         <configuration>
-                            <!-- Directorio de resultados XML para la fase de pruebas -->
-                            <targetDirectory>${project.basedir}/.calidad-de-codigo/pmd</targetDirectory>
-                            <!-- Directorio de reportes HTML para la fase de pruebas -->
-                            <outputDirectory>${project.basedir}/.calidad-de-codigo/pmd</outputDirectory>
+                            <!-- Results XML directory for the test phase -->
+                            <targetDirectory>${project.basedir}/.code-quality/pmd</targetDirectory>
+                            <!-- HTML reports directory for the test phase -->
+                            <outputDirectory>${project.basedir}/.code-quality/pmd</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -377,10 +376,10 @@
                             <goal>cpd</goal>
                         </goals>
                         <configuration>
-                            <!-- Directorio de resultados XML de duplicados para la fase de pruebas -->
-                            <targetDirectory>${project.basedir}/.calidad-de-codigo/cpd</targetDirectory>
-                            <!-- Directorio de reportes HTML de duplicados para la fase de pruebas -->
-                            <outputDirectory>${project.basedir}/.calidad-de-codigo/cpd</outputDirectory>
+                            <!-- Duplicates results XML directory for the test phase -->
+                            <targetDirectory>${project.basedir}/.code-quality/cpd</targetDirectory>
+                            <!-- Duplicates HTML reports directory for the test phase -->
+                            <outputDirectory>${project.basedir}/.code-quality/cpd</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -392,31 +391,31 @@
                 <version>0.8.15</version>
                 <executions>
                     <execution>
-                        <!-- Fase de preparación: Configura el agente de JaCoCo para integrarse con el proceso de tests de la JVM -->
+                        <!-- Preparation phase: configures the JaCoCo agent to hook into the JVM test process -->
                         <goals>
-                            <!-- Prepara al agente para recolectar datos de cobertura durante la ejecución de los tests -->
+                            <!-- Prepares the agent to collect coverage data during test runs -->
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
-                            <!-- Archivo binario donde se guardarán los datos de ejecución recolectados -->
-                            <destFile>${project.basedir}/.calidad-de-codigo/jacoco/jacoco.exec</destFile>
+                            <!-- Binary file where the collected execution data is stored -->
+                            <destFile>${project.basedir}/.code-quality/jacoco/jacoco.exec</destFile>
                         </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
-                        <!-- Fase donde se procesan los datos binarios para generar reportes legibles -->
+                        <!-- Phase where the binary data is processed into readable reports -->
                         <phase>test</phase>
                         <goals>
-                            <!-- Genera el reporte visual (HTML, XML, CSV) de cobertura -->
+                            <!-- Generates the coverage report (HTML, XML, CSV) -->
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <!-- Directorio de salida para el reporte HTML -->
-                            <outputDirectory>${project.basedir}/.calidad-de-codigo/jacoco</outputDirectory>
-                            <!-- Archivo de datos de entrada generado por prepare-agent -->
-                            <dataFile>${project.basedir}/.calidad-de-codigo/jacoco/jacoco.exec</dataFile>
-                            <!-- Exclusiones para el reporte visual: Se omiten clases de configuración 
-                                 que no contienen lógica de negocio para no distorsionar la métrica global -->
+                            <!-- Output directory for the HTML report -->
+                            <outputDirectory>${project.basedir}/.code-quality/jacoco</outputDirectory>
+                            <!-- Input data file generated by prepare-agent -->
+                            <dataFile>${project.basedir}/.code-quality/jacoco/jacoco.exec</dataFile>
+                            <!-- Visual report exclusions: config classes without business logic are skipped
+                                 so they don't skew the global metric -->
                             <excludes>
                                 <exclude>com/tallerwebi/config/*</exclude>
                                 <exclude>com/tallerwebi/MyServletInitializer.class</exclude>
@@ -425,44 +424,44 @@
                     </execution>
                     <execution>
                         <id>check-coverage</id>
-                        <!-- Validación de umbrales: Se ejecuta en la fase 'test' para fallar el build si no se cumplen las reglas -->
+                        <!-- Threshold validation: runs in the 'test' phase to fail the build when rules are not met -->
                         <phase>test</phase>
                         <goals>
-                            <!-- Verifica que la cobertura cumpla con los límites mínimos definidos -->
+                            <!-- Verifies coverage meets the defined minimum limits -->
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <!-- Archivo de datos a validar -->
-                            <dataFile>${project.basedir}/.calidad-de-codigo/jacoco/jacoco.exec</dataFile>
+                            <!-- Data file to validate -->
+                            <dataFile>${project.basedir}/.code-quality/jacoco/jacoco.exec</dataFile>
                             <rules>
                                 <rule>
-                                    <!-- Nivel de granularidad del chequeo (BUNDLE abarca todo el proyecto) -->
+                                    <!-- Granularity level of the check (BUNDLE covers the whole project) -->
                                     <element>BUNDLE</element>
                                     <limits>
                                         <limit>
-                                            <!-- Métrica a evaluar. 
-                                                 Opciones: 
-                                                 - LINE (Líneas de código)
-                                                 - BRANCH (Ramas de decisión: if/switch)
-                                                 - INSTRUCTION (Instrucciones bytecode)
-                                                 - COMPLEXITY (Complejidad ciclomática)
-                                                 - METHOD (Métodos cubiertos)
-                                                 - CLASS (Clases cubiertas) -->
+                                            <!-- Metric to evaluate.
+                                                 Options:
+                                                 - LINE (code lines)
+                                                 - BRANCH (decision branches: if/switch)
+                                                 - INSTRUCTION (bytecode instructions)
+                                                 - COMPLEXITY (cyclomatic complexity)
+                                                 - METHOD (methods covered)
+                                                 - CLASS (classes covered) -->
                                             <counter>LINE</counter>
-                                            <!-- Tipo de valor a controlar.
-                                                 Opciones:
-                                                 - COVEREDRATIO (Porcentaje de cobertura: 0.0 a 1.0)
-                                                 - MISSEDCOUNT (Número máximo de elementos no cubiertos permitidos)
-                                                 - COVEREDCOUNT (Número mínimo de elementos cubiertos)
-                                                 - TOTALCOUNT (Número total de elementos) -->
+                                            <!-- Value type to control.
+                                                 Options:
+                                                 - COVEREDRATIO (coverage ratio: 0.0 to 1.0)
+                                                 - MISSEDCOUNT (max uncovered elements allowed)
+                                                 - COVEREDCOUNT (min covered elements)
+                                                 - TOTALCOUNT (total elements) -->
                                             <value>COVEREDRATIO</value>
-                                            <!-- Porcentaje mínimo requerido (0.80 = 80%) -->
+                                            <!-- Minimum required ratio (0.80 = 80%) -->
                                             <minimum>0.80</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
                             </rules>
-                            <!-- Exclusiones para la validación: Estas clases no se tienen en cuenta para el cálculo del 80% -->
+                            <!-- Validation exclusions: these classes are not considered for the 80% target -->
                             <excludes>
                                 <exclude>com/tallerwebi/config/*</exclude>
                                 <exclude>com/tallerwebi/MyServletInitializer.class</exclude>
@@ -490,8 +489,8 @@
 
         <pluginManagement>
             <plugins>
-                <!-- Esta configuración es para calmar las advertencias del IDE (m2e) 
-                     sobre ejecuciones de plugins que no reconoce en su ciclo de vida interno -->
+                <!-- This config silences IDE (m2e) warnings about plugin executions
+                     it does not recognize in its internal lifecycle -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>

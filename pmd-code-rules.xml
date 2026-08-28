@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ruleset name="Taller Web I Code Quality Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>Code quality standards for Taller Web I - UNLaM</description>
+
+    <!-- Codestyle rules docs: https://pmd.github.io/latest/pmd_rules_java_codestyle.html -->
+    <!-- 1. Avoid too-short variable names (minimum 2 letters so 'id' and 'ok' are allowed) -->
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <property name="minimum" value="2"/>
+        </properties>
+    </rule>
+
+    <!-- Design rules docs: https://pmd.github.io/latest/pmd_rules_java_design.html -->
+    <!-- 2. Cyclomatic complexity (code health metric)
+         Measures how many distinct logical paths a method can take.
+         Increases with each: if, for, while, switch, case, catch, &&, ||.
+         Standard: 10 (above this, a method is too hard to test and maintain).
+         Example: a method with 5 nested ifs and 2 for loops has complexity 8. -->
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="methodReportLevel" value="10"/>
+        </properties>
+    </rule>
+
+    <!-- Design rules docs: https://pmd.github.io/latest/pmd_rules_java_design.html -->
+    <!-- 3. Avoid classes with too many fields (max 10 fields) -->
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="10"/>
+        </properties>
+    </rule>
+
+</ruleset>

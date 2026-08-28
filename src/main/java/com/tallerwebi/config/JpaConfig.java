@@ -6,17 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-/** Configuración JPA de producción: MySQL con parámetros desde variables de entorno. */
+/** Production JPA configuration: MySQL with parameters from environment variables. */
 @Configuration
-public class JpaConfig extends BaseConfiguracionJpa {
+public class JpaConfig extends BaseJpaConfig {
 
   @Bean
   public DataSource dataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-    dataSource.setUrl(ConfiguracionEntorno.urlBaseDeDatos());
-    dataSource.setUsername(ConfiguracionEntorno.dbUser());
-    dataSource.setPassword(ConfiguracionEntorno.dbPassword());
+    dataSource.setUrl(EnvironmentConfig.databaseUrl());
+    dataSource.setUsername(EnvironmentConfig.dbUser());
+    dataSource.setPassword(EnvironmentConfig.dbPassword());
     return dataSource;
   }
 

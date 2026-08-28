@@ -4,8 +4,8 @@
           "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!--
-    Configuración personalizada de Checkstyle optimizada para trabajar con Prettier.
-    Basada en Google Java Style, pero desactivando reglas de formateo que Prettier ya maneja.
+    Custom Checkstyle configuration tuned to work with Prettier.
+    Based on Google Java Style but disabling formatting rules Prettier already handles.
 -->
 
 <module name="Checker">
@@ -13,12 +13,12 @@
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java, properties, xml"/>
 
-    <!-- Excluir archivos de configuración generados o de terceros si es necesario -->
+    <!-- Exclude generated or third-party config files if needed -->
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
 
-    <!-- Reglas de archivos (File set checks) -->
+    <!-- File set checks -->
     <module name="NewlineAtEndOfFile"/>
     <module name="Translation"/>
     <module name="FileLength"/>
@@ -27,7 +27,7 @@
     </module>
 
     <module name="TreeWalker">
-        <!-- 1. DOCUMENTACIÓN (Javadocs) - Checkstyle sigue siendo la autoridad aquí -->
+        <!-- 1. DOCUMENTATION (Javadocs) - Checkstyle remains the authority here -->
         <module name="JavadocType">
             <property name="scope" value="public"/>
         </module>
@@ -38,11 +38,11 @@
         </module>
         <module name="MissingJavadocType">
             <property name="scope" value="public"/>
-            <!-- Ruido para un taller: no se exige Javadoc en toda clase publica -->
+            <!-- Too noisy for a workshop: Javadoc is not required on every public class -->
             <property name="severity" value="ignore"/>
         </module>
 
-        <!-- 2. NOMENCLATURA (Naming conventions) - Prettier no revisa esto -->
+        <!-- 2. NAMING CONVENTIONS - Prettier does not check these -->
         <module name="ConstantName"/>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
@@ -57,13 +57,13 @@
             <property name="allowedAbbreviationLength" value="1"/>
         </module>
 
-        <!-- 3. IMPORTACIONES (Imports) -->
+        <!-- 3. IMPORTS -->
         <module name="AvoidStarImport"/>
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
-        <!-- 4. LÍMITES DE ESTRUCTURA (Size Violations) -->
+        <!-- 4. STRUCTURE LIMITS (Size Violations) -->
         <module name="MethodLength">
             <property name="max" value="50"/>
         </module>
@@ -71,7 +71,7 @@
             <property name="max" value="7"/>
         </module>
 
-        <!-- 5. CODIFICACIÓN (Coding) -->
+        <!-- 5. CODING -->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="HiddenField">
@@ -83,7 +83,7 @@
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 
-        <!-- 6. DISEÑO (Design) -->
+        <!-- 6. DESIGN -->
         <module name="FinalClass"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
@@ -92,9 +92,9 @@
         </module>
 
         <!-- 
-           NOTA: Se omiten intencionalmente las reglas de Indentation, LineLength, 
-           WhitespaceAround, LeftCurly, RightCurly, etc. 
-           Prettier es el encargado exclusivo de esas tareas.
+           NOTE: Indentation, LineLength, WhitespaceAround, LeftCurly, RightCurly,
+           etc. are intentionally omitted.
+           Prettier is the sole owner of those rules.
         -->
 
     </module>

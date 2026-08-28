@@ -14,12 +14,12 @@ import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
-/** Base MVC compartida entre producción y tests: solo difiere el contexto concreto. */
+/** Shared MVC base between production and tests: only the concrete context differs. */
 @Configuration
 @EnableWebMvc
-@Import({ SeguridadConfig.class, ValidacionConfig.class })
+@Import({ SecurityConfig.class, ValidationConfig.class })
 @ComponentScan(
-  { "com.tallerwebi.presentacion", "com.tallerwebi.dominio", "com.tallerwebi.infraestructura" }
+  { "com.tallerwebi.presentation", "com.tallerwebi.domain", "com.tallerwebi.infrastructure" }
 )
 public abstract class BaseWebConfig implements WebMvcConfigurer {
 

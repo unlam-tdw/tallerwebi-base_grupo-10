@@ -10,8 +10,8 @@
   <main role="main" class="flex-1 flex items-center justify-center p-4">
 
     <div id="loginbox" class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-      <form action="#" th:action="@{/validate-login}" method="POST" th:object="${loginData}">
-        <h3 class="mb-2 text-2xl font-semibold text-gray-900">Taller Web I</h3>
+      <form action="#" th:action="@{/register}" method="POST" th:object="${newUserData}">
+        <h3 class="mb-2 text-2xl font-semibold text-gray-900">New User</h3>
         <hr class="mb-6 border-gray-200">
         <div>
           <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Email</label>
@@ -28,15 +28,13 @@
             class="alert alert-danger mb-2 text-sm text-red-600"></p>
         </div>
 
-        <button id="btn-login" type="submit"
-          class="mt-6 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">Sign in</button>
+        <button id="btn-register" type="submit"
+          class="mt-6 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700">Register</button>
 
         <p th:replace="~{fragments :: errorAlert(${error})}"></p>
       </form>
-      <div class="mt-4 text-center text-sm">
-        <a id="btn-register" href="new-user" class="text-blue-600 hover:underline">Register</a>
-      </div>
     </div>
+
   </main>
   <!-- /.container -->
 

@@ -1,4 +1,4 @@
-package com.tallerwebi.integracion.config;
+package com.tallerwebi.integration.config;
 
 import com.tallerwebi.config.BaseWebConfig;
 import org.springframework.context.annotation.Configuration;

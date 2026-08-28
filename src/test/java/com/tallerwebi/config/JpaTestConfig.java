@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-/** Configuración JPA de tests: HSQLDB en memoria, solo cambia el DataSource y el dialecto. */
+/** Test JPA configuration: in-memory HSQLDB; only the DataSource and dialect differ. */
 @Configuration
-public class JpaTestConfig extends BaseConfiguracionJpa {
+public class JpaTestConfig extends BaseJpaConfig {
 
   @Bean
   public DataSource dataSource() {

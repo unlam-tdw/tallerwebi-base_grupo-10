@@ -4,9 +4,9 @@ import tailwindcss from "@tailwindcss/vite";
 
 const PATH_DIST = fileURLToPath(new URL("../webapp/resources/core/dist", import.meta.url));
 
-// El frontend es SOLO estilos: Thymeleaf renderiza todo el HTML y toda la lógica
-// vive en Java. Vite+Tailwind actúan únicamente en build-time para generar el CSS
-// que las plantillas referencian (@{/dist/main.css}). No se emite JavaScript.
+// The frontend is STYLES ONLY: Thymeleaf renders all HTML and all logic lives
+// in Java. Vite+Tailwind only run at build-time to generate the CSS the
+// templates reference (@{/dist/main.css}). No JavaScript is emitted.
 export default defineConfig({
   plugins: [tailwindcss()],
   build: {

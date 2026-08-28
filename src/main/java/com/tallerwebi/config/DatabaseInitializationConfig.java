@@ -11,8 +11,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 @Configuration
 public class DatabaseInitializationConfig {
 
-  // Depende del EntityManagerFactory para garantizar que hbm2ddl creó el esquema
-  // antes de ejecutar data.sql.
+  // Depends on the EntityManagerFactory to guarantee hbm2ddl created the schema
+  // before data.sql runs.
   @Bean
   public DataSourceInitializer dataSourceInitializer(
     DataSource dataSource,
