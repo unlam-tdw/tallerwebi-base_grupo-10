@@ -37,7 +37,9 @@
             <property name="allowMissingReturnTag" value="true"/>
         </module>
         <module name="MissingJavadocType">
-             <property name="scope" value="public"/>
+            <property name="scope" value="public"/>
+            <!-- Ruido para un taller: no se exige Javadoc en toda clase publica -->
+            <property name="severity" value="ignore"/>
         </module>
 
         <!-- 2. NOMENCLATURA (Naming conventions) - Prettier no revisa esto -->

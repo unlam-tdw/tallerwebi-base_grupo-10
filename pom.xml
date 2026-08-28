@@ -254,6 +254,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
+                <dependencies>
+                    <!-- Version del runtime de Checkstyle (soporta Java 25 / JEP 512) -->
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.runtime.version}</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <!-- Ubicación del archivo de configuración personalizado (basado en Google Style pero compatible con Prettier) -->
                     <configLocation>${project.basedir}/checkstyle-base.xml</configLocation>
