@@ -31,3 +31,6 @@ openspec
 # Frontend (Vite) build output and local dependencies
 src/main/frontend/node_modules/
 src/main/webapp/resources/core/dist/
+
+# Local environment configuration (contains credentials)
+.env
