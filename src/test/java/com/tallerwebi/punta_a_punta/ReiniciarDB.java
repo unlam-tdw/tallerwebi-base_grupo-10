@@ -1,23 +1,27 @@
 package com.tallerwebi.punta_a_punta;
 
+import com.tallerwebi.config.ConfiguracionEntorno;
 import java.io.IOException;
 
 public class ReiniciarDB {
 
   public static void limpiarBaseDeDatos() {
     try {
-      String dbHost = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
-      String dbPort = System.getenv("DB_PORT") != null ? System.getenv("DB_PORT") : "3306";
-      String dbName = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "tallerwebi";
-      String dbUser = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "user";
-      String dbPassword = System.getenv("DB_PASSWORD") != null
-        ? System.getenv("DB_PASSWORD")
-        : "user";
+      String dbHost = ConfiguracionEntorno.dbHost();
+      String dbPort = ConfiguracionEntorno.dbPort();
+      String dbName = ConfiguracionEntorno.dbName();
+      String dbUser = ConfiguracionEntorno.dbUser();
+      String dbPassword = ConfiguracionEntorno.dbPassword();
 
+      // El hash BCrypt corresponde a la contraseña 'test' (prefijo $2a$10$).
+      // Se escapan los '$' (\\$) para que bash no los interprete como variables.
+      String hash = "\\$2a\\$10\\$ShOBUPfT5jLImCcQoWkM6edIQ3xjC6XYzgC7RDOPLqGiTRgHMkh2K";
       String sqlCommands =
         "DELETE FROM Usuario;\n" +
         "ALTER TABLE Usuario AUTO_INCREMENT = 1;\n" +
-        "INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@unlam.edu.ar', 'test', 'ADMIN', true);";
+        "INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@unlam.edu.ar', '" +
+        hash +
+        "', 'ADMIN', true);";
 
       String comando = String.format(
         "docker exec tallerwebi-mysql mysql -h %s -P %s -u %s -p%s %s -e \"%s\"",
