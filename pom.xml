@@ -17,6 +17,7 @@
         <junit.version>6.1.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
         <hibernate.version>6.6.54.Final</hibernate.version>
+        <springdata.version>3.5.13</springdata.version>
         <playwright.version>1.61.0</playwright.version>
         <hsqldb.version>2.7.4</hsqldb.version>
         <checkstyle.version>3.6.0</checkstyle.version>
@@ -102,11 +103,39 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- Spring Data JPA: repositorios basados en interfaces (sin Spring Boot) -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${springdata.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>${playwright.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Cifrado de contraseñas con BCrypt -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>6.5.11</version>
+        </dependency>
+
+        <!-- Validación de formularios con Bean Validation (Jakarta) -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.5.Final</version>
+        </dependency>
+
+        <!-- Implementación de EL requerida por Hibernate Validator para interpolar mensajes -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>4.0.2</version>
         </dependency>
     </dependencies>
 
@@ -136,6 +165,51 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
+            </plugin>
+
+            <!-- Build del frontend (Vite) durante la compilación.
+                 Node/npm se resuelven desde el PATH (ya disponibles en este entorno);
+                 el dist generado queda en src/main/webapp/resources/core/dist y entra al WAR. -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <workingDirectory>src/main/frontend</workingDirectory>
+                    <installDirectory>target</installDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <nodeVersion>v24.7.0</nodeVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-ci</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>vite-build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Plugin para ejecutar las pruebas -->
@@ -395,7 +469,7 @@
                 <artifactId>jetty-ee10-maven-plugin</artifactId>
                 <version>12.0.37</version>
                 <configuration>
-                    <scanIntervalSeconds>2</scanIntervalSeconds>
+                    <scan>2</scan>
                     <httpConnector>
                         <port>8080</port>
                     </httpConnector>

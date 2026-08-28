@@ -1,7 +1,7 @@
 package com.tallerwebi;
 
 import com.tallerwebi.config.DatabaseInitializationConfig;
-import com.tallerwebi.config.HibernateConfig;
+import com.tallerwebi.config.JpaConfig;
 import com.tallerwebi.config.SpringWebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -18,7 +18,7 @@ public class MyServletInitializer extends AbstractAnnotationConfigDispatcherServ
   protected Class<?>[] getServletConfigClasses() {
     return new Class[] {
       SpringWebConfig.class,
-      HibernateConfig.class,
+      JpaConfig.class,
       DatabaseInitializationConfig.class,
     };
   }

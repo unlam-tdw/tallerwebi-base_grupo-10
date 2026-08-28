@@ -3,37 +3,27 @@ package com.tallerwebi.infraestructura;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.tallerwebi.dominio.RepositorioUsuario;
+import com.tallerwebi.config.JpaTestConfig;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.UsuarioNoEncontrado;
-import com.tallerwebi.infraestructura.config.HibernateInfraestructuraTestConfig;
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { HibernateInfraestructuraTestConfig.class })
+@ContextConfiguration(classes = { JpaTestConfig.class })
 public class RepositorioUsuarioTest {
 
   @Autowired
-  private SessionFactory sessionFactory;
-
   private RepositorioUsuario repositorioUsuario;
-
-  @BeforeEach
-  public void init() {
-    repositorioUsuario = new RepositorioUsuarioImpl(sessionFactory);
-  }
 
   @Test
   @Transactional
@@ -48,27 +38,6 @@ public class RepositorioUsuarioTest {
 
     // validacion
     this.entoncesSeGuardoElUsuario(emailNuevoUsuario, usuario);
-  }
-
-  @Test
-  @Transactional
-  @Rollback
-  public void deberiaEncontrarUnUsuarioExistenteCuandoBuscoPorEmailYPassword() {
-    String email = "test@test.com";
-    String password = "123";
-    Usuario usuario = this.dadoQueTengoUnUsuario(email, password, "USER");
-    this.dadoQueExisteElUsuario(usuario);
-
-    Usuario obtenido = this.cuandoBuscoUnUsuario(email, password);
-
-    this.entoncesElUsuarioObtenidoEsCorrecto(obtenido, usuario);
-  }
-
-  @Test
-  @Transactional
-  public void noDeberiaEncontrarUnUsuarioInexistenteCuandoBuscoPorEmailYPassword() {
-    Usuario obtenido = this.cuandoBuscoUnUsuario("test@test.com", "123");
-    this.entoncesElUsuarioObtenidoEsNull(obtenido);
   }
 
   @Test
@@ -115,8 +84,18 @@ public class RepositorioUsuarioTest {
   public void deberiaLanzarUnaExcepcionAlIntentarModificarUnUsuarioInexistente() {
     Usuario usuario = this.dadoQueTengoUnUsuario("noexiste@test.com", "123", "USER");
 
-    // Al no tener ID (no estar persistido), buscar por id devuelve null y
-    // modificar debe lanzar UsuarioNoEncontrado.
+    // Al no tener ID (no estar persistido), modificar debe lanzar UsuarioNoEncontrado.
+    this.entoncesSeLanzaUnaUsuarioNoEncontrado(usuario);
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void deberiaLanzarUnaExcepcionAlIntentarModificarUnUsuarioConIdInexistente() {
+    Usuario usuario = this.dadoQueTengoUnUsuario("noexiste@test.com", "123", "USER");
+    usuario.setId(999L);
+
+    // Con ID pero sin registro asociado, modificar debe lanzar UsuarioNoEncontrado.
     this.entoncesSeLanzaUnaUsuarioNoEncontrado(usuario);
   }
 
@@ -129,30 +108,23 @@ public class RepositorioUsuarioTest {
   }
 
   private void dadoQueExisteElUsuario(Usuario usuario) {
-    this.sessionFactory.getCurrentSession().persist(usuario);
+    this.repositorioUsuario.save(usuario);
   }
 
   private void cuandoGuardoUnUsuario(Usuario usuario) {
-    repositorioUsuario.guardar(usuario);
-  }
-
-  private Usuario cuandoBuscoUnUsuario(String email, String password) {
-    return repositorioUsuario.buscarUsuario(email, password);
+    this.repositorioUsuario.save(usuario);
   }
 
   private Usuario cuandoObtengoUnUsuarioPorEmail(String email) {
-    return repositorioUsuario.buscar(email);
+    return this.repositorioUsuario.findByEmail(email).orElse(null);
   }
 
   private void cuandoModificoUnUsuario(Usuario usuario) {
-    repositorioUsuario.modificar(usuario);
+    this.repositorioUsuario.modificar(usuario);
   }
 
   private void entoncesSeGuardoElUsuario(String email, Usuario usuarioEsperado) {
-    String hql = "FROM Usuario WHERE email = :email";
-    Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Usuario.class);
-    query.setParameter("email", email);
-    Usuario usuarioObtenido = (Usuario) query.getSingleResult();
+    Usuario usuarioObtenido = this.repositorioUsuario.findByEmail(email).orElse(null);
     this.entoncesElUsuarioObtenidoEsCorrecto(usuarioEsperado, usuarioObtenido);
   }
 
@@ -160,6 +132,7 @@ public class RepositorioUsuarioTest {
     Usuario usuarioObtenido,
     Usuario usuarioEsperado
   ) {
+    assertThat(usuarioObtenido, is(not(nullValue())));
     assertThat(usuarioObtenido.getEmail(), is(equalTo(usuarioEsperado.getEmail())));
     assertThat(usuarioObtenido.getPassword(), is(equalTo(usuarioEsperado.getPassword())));
     assertThat(usuarioObtenido.getActivo(), is(equalTo(usuarioEsperado.getActivo())));
