@@ -44,7 +44,24 @@ Docker es una plataforma de contenedores que permite empaquetar aplicaciones con
 
 ## 1. ¿Cómo iniciar el proyecto?
 > Necesitamos previamente una base de datos mysql en el puerto 3306.
+
+### Desarrollo local con un comando (recomendado)
+```powershell
+npm run dev
+```
+Levanta MySQL (docker), compila los estilos y arranca Jetty con hot-reload:
+Java/Thymeleaf se actualizan solos (scan 2s). En el primer arranque instala las
+dependencias del frontend solo. Frena con `Ctrl+C` (apaga Jetty y MySQL).
+
+> Estilos: se compilan frescos en cada arranque. Si estás trabajando sobre
+> estilos en vivo, corré el watch aparte en otra terminal:
+> `cd src/main/frontend && npm run build -- --watch`
+
+### Paso a paso (sin el orquestador)
 ```shell
+# Generar los estilos una sola vez (dist/ está ignorado por git; el plugin Maven
+# solo compila en prepare-package): mvn package  o  cd src/main/frontend && npm ci && npm run build
+
 # Levantamos un BBDD con docker
 docker build -f DockerfileSQL -t mysql .
 docker run --env-file .env --name tallerwebi-mysql -d -p 3306:3306 mysql
@@ -71,6 +88,7 @@ $ mvn clean jetty:run
 ## 7. ¿Cómo correr las pruebas de punta a punta?
 
 ### Iniciar el servidor
+> Antes de levantar el servidor hay que generar la hoja de estilos del frontend la primera vez (ver la nota de la sección 1).
 ```shell
 # Opción 1
 $ mvn clean jetty:run
@@ -84,14 +102,20 @@ $ mvn test -Dtest="VistaLoginE2E"
 $ mvn test -Dtest="VistaLoginE2E#deberiaNavegarAlHomeSiElUsuarioExiste"
 ```
 
-## 8. ¿Cómo correr las pruebas unitarias de javascript?
+> **Nota (contrato UI):** las E2E dependen de que las vistas renderizadas conserven los `id`/`name` que usan sus selectores (`#email`, `#password`, `#btn-login`, `#btn-registrarme`, `#btn-register`, `nav a.navbar-brand` y el mensaje de error "Error Usuario o clave incorrecta"). El frontend (Vite/Tailwind) solo aporta estilos (CSS) a esas vistas sin alterar ese contrato.
+
+## 8. ¿Cómo compilar los estilos?
+El frontend es **solo estilos (CSS)**: Thymeleaf renderiza todo el HTML y toda la lógica vive en Java. Vite + Tailwind actúan únicamente como herramientas de **build-time** que generan una hoja de estilos. Se compila desde la carpeta `src/main/frontend`:
 ```shell
-$ cd src/main/webapp/resources/core/js
+$ cd src/main/frontend
 # Si es la primera vez debo descargar e instalar las dependencias
-$ npm install
-# Ejecuto las pruebas
-$ npm run test
+$ npm ci
+# Genero la hoja de estilos (CSS ONLY, sin JS)
+$ npm run build
 ```
+Esto produce `src/main/webapp/resources/core/dist/main.css` (solo CSS; no se emite JavaScript). El frontend solo **renderiza**; no hay lógica de validación en el cliente.
+
+> **Nota (pirámide de tests):** `mvn test` ejecuta las suites de pruebas Java (unitarias + integración MockMvc con Spring Test) y **no** requiere Node. El frontend solo se compila en la fase de empaquetado (`mvn package`, vía `frontend-maven-plugin`). Las pruebas E2E (Playwright) se invocan bajo demanda con los comandos de la sección 7 y requieren MySQL en el puerto 3306 y la aplicación levantada.
 
 ## 9. Docker:
 Los archivos de docker de este proyecto estan preparados para desplegar un archivo WAR usando el servidor Jetty o Tomcat.
@@ -182,10 +206,10 @@ mvn validate
 # Compila el código fuente del proyecto (tambien descarga dependencias)
 mvn compile
 
-# Ejecuta las pruebas unitarias
+# Ejecuta las suites de pruebas Java (unitarias + integración MockMvc)
 mvn test
 
-# Empaqueta el código compilado en un archivo JAR o WAR (tambien descarga dependencias)
+# Empaqueta el código compilado en un archivo JAR o WAR (tambien descarga dependencias y construye el bundle del frontend con Vite)
 mvn package
 
 # Verifica que el paquete es válido y cumple los criterios de calidad
@@ -261,11 +285,8 @@ Formatea automáticamente el código Java para que cumpla con las reglas de esti
 * **Función:** Reescribe tus archivos `.java` para corregir la indentación y el formato automáticamente al ejecutar `mvn test` o `mvn compile`.
 * **Documentación:** [Prettier Java](https://github.com/jhipster/prettier-java)
 
-### ESLint (JavaScript Linter)
-Analiza el código JavaScript para detectar errores y asegurar un estilo consistente.
-* **Se ejecuta en:** GitHub Actions (CI) antes de correr los tests de JS.
-* **Ejemplo de fallo:** Uso de variables no definidas o falta de punto y coma si la regla lo exige.
-* **Documentación:** [ESLint Official Site](https://eslint.org/)
+### Frontend / estilos (Vite + Tailwind)
+El frontend se limita a estilos (CSS): no hay linter de JavaScript ni TypeScript, ya que el cliente no ejecuta lógica propia (todo vive en Java). La única tarea del frontend es `npm run build` (Vite + Tailwind) que genera la hoja de estilos `main.css` desde `src/main/frontend`. A diferencia de Prettier, Checkstyle, PMD, CPD y JaCoCo, se ejecuta con npm y no en las fases de Maven.
 
 ### JaCoCo (Code Coverage)
 Mide qué porcentaje del código fuente está cubierto por las pruebas unitarias.
@@ -299,12 +320,16 @@ rd /s /q .calidad-de-codigo\jacoco & mvn clean test
 * Docker
 * Java 25 (LTS)
 * Spring 6.2.19
+* Spring Data JPA 3.5.13
+* spring-security-crypto 6.5.11 (BCrypt PasswordEncoder)
+* Hibernate Validator 8.0.5.Final + jakarta.el 4.0.2
 * Thymeleaf 3.1.5.RELEASE (spring6)
 * Embedded Jetty Server EE10 12.0.37
 * Servlet API (Jakarta) 6.0.0
-* Bootstrap 5.2.0 (CDN)
+* Vite 8 + Tailwind CSS 4 (solo estilos en build-time; genera `src/main/webapp/resources/core/dist/main.css`, CSS ONLY, sin JavaScript)
 * IntelliJ IDEA | VS Code
 * Maven 3.9+ (sobre JDK 25)
+* frontend-maven-plugin 2.0.2 (descarga Node v24.7.0 en `target/` para construir el frontend)
 * Spring Test 6.2.19
 * Hamcrest 2.2
 * JUnit 6.1.2
@@ -315,9 +340,7 @@ rd /s /q .calidad-de-codigo\jacoco & mvn clean test
 * PMD 7.26.0 (plugin 3.28.0) & CPD
 * Checkstyle 13.8.0 (plugin 3.6.0, Google Style)
 * Prettier Maven Plugin 0.22 (Prettier-Java 2.5.0)
-* ESLint 9.x
 * JaCoCo 0.8.15
-* Node 18.16.1 o superior <- Instalación manual desde la [página de node](https://nodejs.org/en) 
-* npm --> npm install -g npm
+* Node v24.7.0 (el `frontend-maven-plugin` lo descarga automáticamente en `target/`; instalar Node manualmente es opcional, solo útil para compilar los estilos del frontend directamente)
 
 *_Proyecto modificado en base a: [Spring MVC hello world example (Maven and Thymeleaf)](https://mkyong.com/spring-mvc/spring-mvc-hello-world-example/) _*
