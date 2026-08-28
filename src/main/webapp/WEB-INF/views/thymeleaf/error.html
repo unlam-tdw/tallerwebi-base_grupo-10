@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head(null)}"></head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <nav th:replace="~{fragments :: navbar}"></nav>
+
+  <main role="main" class="flex-1 flex items-center justify-center p-4">
+    <div id="errorbox" class="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-md">
+      <h3 class="mb-2 text-2xl font-semibold text-gray-900">Ocurrió un error</h3>
+      <hr class="mb-6 border-gray-200">
+      <p class="alert alert-danger mb-6 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700"
+        th:text="${error}">Error</p>
+      <a th:href="@{/login}" class="text-blue-600 hover:underline">Volver al login</a>
+    </div>
+  </main>
+
+</body>
+
+</html>
