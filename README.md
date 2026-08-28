@@ -45,6 +45,23 @@ Docker es una plataforma de contenedores que permite empaquetar aplicaciones con
 ## 1. ¿Cómo iniciar el proyecto?
 > Necesitamos previamente una base de datos mysql en el puerto 3306.
 
+### Requisitos previos (primera vez en tu máquina)
+Necesitás tener instalados:
+- **JDK 25**
+- **Maven**
+- **Node.js** (con npm)
+- **Docker Desktop** (con Docker Compose v2)
+
+### Primera vez que clonás el repo
+```powershell
+git clone <url-del-repo>
+cd tallerwebi-base_grupo-10
+npm run dev
+```
+
+El clon **no trae** `node_modules`, ni la hoja de estilos `dist/main.css` (ignorada por git), ni MySQL corriendo. `npm run dev` resuelve todo solo:
+`npm ci` instala las dependencias del frontend → `npm run build` genera los estilos → `docker compose up -d mysql` levanta la base. Después abrí http://localhost:8080/spring y entrá con `test@unlam.edu.ar` / `test`.
+
 ### Desarrollo local con un comando (recomendado)
 ```powershell
 npm run dev
