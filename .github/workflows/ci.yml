@@ -1,36 +1,49 @@
-name: continuous_integration
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: CI
+
 on:
   pull_request:
     branches: ["main"]
   push:
     branches: ["main"]
+
 jobs:
-  Explore-GitHub-Actions:
+  backend:
+    name: Backend (Maven build, tests & quality gates)
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 This job was triggered automatically by the ${{ github.event_name }} event"
-      - run: echo "🐧 This job is running on a ${{ runner.os }} server by GitHub!"
-      - run: echo "🔎 The branch name is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Downloading the code
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Configure JDK 25
+
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '25'
-          cache: 'maven'
-      - run: echo "💡 The repository ${{ github.repository }} has been cloned."
-      - run: echo "🖥️ The workflow is ready to test the code"
-      - name: Running the tests
+          distribution: "temurin"
+          java-version: "25"
+          cache: "maven"
+
+      - name: Build, test & enforce quality gates (Checkstyle, PMD/CPD, JaCoCo 80%)
         run: |
           mvn clean verify --fail-at-end
-      - run: echo "🍏 The job status is ${{ job.status }}."
-      - name: Install node packages
-        run: |
-          cd src/main/frontend
-          npm ci
-      - name: Compile the frontend styles (Vite + Tailwind, CSS only)
-        run: |
-          cd src/main/frontend
-          npm run build
+
+  frontend:
+    name: Frontend (install, lint & build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/main/frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: src/main/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build styles (Vite + Tailwind)
+        run: npm run build
