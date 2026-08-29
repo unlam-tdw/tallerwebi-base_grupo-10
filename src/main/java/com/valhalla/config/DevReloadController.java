@@ -21,17 +21,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class DevReloadController {
 
   private static final Path DEV_TEMPLATES_DIR = Path.of("src/main/webapp/WEB-INF/templates");
+  private static final Path DEV_JS_DIR = Path.of("src/main/webapp/resources/core/js");
 
   private final Path templatesDir;
+  private final Path jsDir;
   private final String bootId;
   private final boolean enabled;
 
   public DevReloadController() {
-    this(DEV_TEMPLATES_DIR, Files.exists(DEV_TEMPLATES_DIR));
+    this(
+      DEV_TEMPLATES_DIR,
+      DEV_JS_DIR,
+      Files.exists(DEV_TEMPLATES_DIR) && Files.exists(DEV_JS_DIR)
+    );
   }
 
-  DevReloadController(Path templatesDir, boolean enabled) {
+  DevReloadController(Path templatesDir, Path jsDir, boolean enabled) {
     this.templatesDir = templatesDir;
+    this.jsDir = jsDir;
     this.bootId = Long.toHexString(System.nanoTime());
     this.enabled = enabled;
   }
@@ -46,17 +53,17 @@ public class DevReloadController {
   }
 
   private String token() {
-    return bootId + ":" + templatesSignature();
+    return bootId + ":" + signatureOf(templatesDir, ".html") + ":" + signatureOf(jsDir, ".js");
   }
 
-  private String templatesSignature() {
+  private String signatureOf(Path root, String extension) {
     StringBuilder builder = new StringBuilder();
     List<Path> files;
-    try (Stream<Path> stream = Files.walk(templatesDir)) {
+    try (Stream<Path> stream = Files.walk(root)) {
       files =
         stream
           .filter(Files::isRegularFile)
-          .filter(p -> p.getFileName().toString().endsWith(".html"))
+          .filter(p -> p.getFileName().toString().endsWith(extension))
           .sorted()
           .toList();
     } catch (IOException exception) {
@@ -64,7 +71,7 @@ public class DevReloadController {
     }
     for (Path file : files) {
       try {
-        builder.append(templatesDir.relativize(file));
+        builder.append(root.relativize(file));
         builder.append(file.toFile().lastModified());
         builder.append(file.toFile().length());
       } catch (Exception exception) {

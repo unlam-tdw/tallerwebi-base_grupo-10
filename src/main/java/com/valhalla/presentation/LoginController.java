@@ -87,6 +87,7 @@ public class LoginController {
     }
     Map<String, Object> model = new ModelMap();
     model.put(ATTR_USER, userSession);
+    model.put("startedAt", httpSession.getCreationTime());
     return new ModelAndView(VIEW_HOME, model);
   }
 

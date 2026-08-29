@@ -32,4 +32,11 @@ public class LoginPage extends WebPage {
   public void clickRegister() {
     this.clickElement("#btn-register");
   }
+
+  public void waitForSessionTimerToTick() {
+    this.page.waitForFunction(
+        "() => { const span = document.querySelector('[x-data^=sessionClock] span'); " +
+        "return span !== null && span.textContent !== '0:00'; }"
+      );
+  }
 }

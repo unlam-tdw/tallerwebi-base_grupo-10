@@ -93,8 +93,10 @@ public class LoginViewE2E {
   }
 
   private void thenShouldBeRedirectedToHome() throws MalformedURLException {
+    loginPage.waitForPath("/spring/home");
     URL url = loginPage.getCurrentUrl();
     assertThat(url.getPath(), matchesPattern("^/spring/home(?:;jsessionid=[^/\\s]+)?$"));
+    loginPage.waitForSessionTimerToTick();
   }
 
   private void thenShouldSeeAnErrorMessage() {
@@ -116,5 +118,6 @@ public class LoginViewE2E {
     newUserPage.typeEmail(email);
     newUserPage.typePassword(password);
     newUserPage.clickRegister();
+    newUserPage.waitForPath("/spring/login");
   }
 }

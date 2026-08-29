@@ -18,6 +18,10 @@ public class WebPage {
     return URI.create(page.url()).toURL();
   }
 
+  public void waitForPath(String path) {
+    page.waitForURL("**" + path);
+  }
+
   protected String getElementText(String cssSelector) {
     return this.getElement(cssSelector).textContent();
   }

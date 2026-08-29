@@ -21,6 +21,7 @@
     }
   </style>
   <script th:src="@{/js/tailwind-browser.js}" defer></script>
+  <script th:src="@{/js/vue.global.prod.js}" defer></script>
   <script defer>
     (function () {
       var reveal = function () {
@@ -37,7 +38,7 @@
       setTimeout(function () { document.documentElement.style.visibility = "visible"; }, 3000);
     })();
   </script>
-<script th:if="${devReloadToken != null}" th:inline="javascript" defer>
+  <script th:if="${devReloadToken != null}" th:inline="javascript" defer>
     (function () {
       var endpoint = /*[[@{/reload/version}]]*/ "";
       var expected = /*[[${devReloadToken}]]*/ "";

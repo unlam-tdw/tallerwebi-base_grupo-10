@@ -15,9 +15,38 @@
         th:text="${user.role}">ROLE</span>
     </p>
 
+    <div id="session-clock-app" th:attr="data-started-at=${startedAt}"
+      class="rounded-lg bg-white px-4 py-3 text-sm text-gray-700 shadow-md">
+      Signed in for <span class="font-medium text-gray-900">{{ elapsed }}</span>
+    </div>
+
     <a th:href="@{/home}" class="text-blue-600 hover:underline">Reload</a>
   </main>
-  <!-- /.container -->
+
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          elapsed: '0:00'
+        }
+      },
+      mounted() {
+        const startedAt = Number(this.$el.dataset.startedAt);
+        const pad = (n) => n < 10 ? '0' + n : '' + n;
+        const update = () => {
+          const total = Math.max(0, Date.now() - startedAt);
+          let seconds = Math.floor(total / 1000);
+          const hours = Math.floor(seconds / 3600);
+          seconds %= 3600;
+          const minutes = Math.floor(seconds / 60);
+          seconds %= 60;
+          this.elapsed = (hours > 0 ? pad(hours) + ':' : '') + pad(minutes) + ':' + pad(seconds);
+        };
+        setInterval(update, 1000);
+        update();
+      }
+    }).mount('#session-clock-app');
+  </script>
 
 </body>
 

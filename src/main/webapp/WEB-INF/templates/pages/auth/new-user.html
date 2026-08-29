@@ -6,35 +6,69 @@
 <body th:replace="~{layouts/base :: layout(~{::main})}">
 
   <main class="flex-1 flex items-center justify-center p-4">
-
-    <div class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-      <form action="#" th:action="@{/register}" method="POST" th:object="${newUserData}">
+    <div id="register-app" class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+      <form @submit.prevent="submit" action="#" th:action="@{/register}" method="POST">
         <h3 class="mb-2 text-2xl font-semibold text-gray-900">New User</h3>
         <hr class="mb-6 border-gray-200">
         <div>
           <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Email</label>
-          <input th:field="*{email}" id="email" name="email" type="email"
+          <input v-model="email" id="email" name="email" type="email"
             class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
-          <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-            class="alert alert-danger mb-2 text-sm text-red-600"></p>
+          <p v-if="errors.email" class="alert alert-danger mb-2 text-sm text-red-600">{{ errors.email }}</p>
         </div>
         <div class="mt-4">
           <label for="password" class="mb-1 block text-sm font-medium text-gray-700">Password</label>
-          <input th:field="*{password}" type="password" id="password" name="password"
+          <input v-model="password" type="password" id="password" name="password"
             class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
-          <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-            class="alert alert-danger mb-2 text-sm text-red-600"></p>
+          <p v-if="errors.password" class="alert alert-danger mb-2 text-sm text-red-600">{{ errors.password }}</p>
         </div>
-
-        <button id="btn-register" type="submit"
-          class="mt-6 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700">Register</button>
-
-        <p th:replace="~{components/alerts/error-alert :: errorAlert(${error})}"></p>
+        <button id="btn-register" type="submit" :disabled="loading"
+          class="mt-6 w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+          <span v-if="loading">Registering...</span>
+          <span v-else>Register</span>
+        </button>
+        <p v-if="error" class="alert alert-danger my-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{{ error }}</p>
       </form>
     </div>
-
   </main>
-  <!-- /.container -->
+
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          email: '',
+          password: '',
+          error: '',
+          errors: {},
+          loading: false
+        }
+      },
+      methods: {
+        async submit() {
+          this.loading = true;
+          this.error = '';
+          this.errors = {};
+          const form = this.$el.querySelector('form');
+          const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+          if (res.redirected) {
+            window.location.href = res.url;
+          } else {
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const fieldErrors = doc.querySelectorAll('.alert-danger');
+            fieldErrors.forEach(el => {
+              if (el.previousElementSibling && el.previousElementSibling.name) {
+                this.errors[el.previousElementSibling.name] = el.textContent.trim();
+              } else if (!el.id) {
+                this.error = el.textContent.trim();
+              }
+            });
+          }
+          this.loading = false;
+        }
+      }
+    }).mount('#register-app');
+  </script>
 
 </body>
 
