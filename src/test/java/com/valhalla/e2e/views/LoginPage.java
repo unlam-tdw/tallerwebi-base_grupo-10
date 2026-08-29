@@ -14,7 +14,7 @@ public class LoginPage extends WebPage {
   }
 
   public String getErrorMessage() {
-    return this.getElementText("p.alert.alert-danger");
+    return this.getElementText("p.alert.alert-danger.my-4");
   }
 
   public void typeEmail(String email) {
