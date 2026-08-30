@@ -35,8 +35,9 @@ public class LoginPage extends WebPage {
 
   public void waitForSessionTimerToTick() {
     this.page.waitForFunction(
-        "() => { const span = document.querySelector('[x-data^=sessionClock] span'); " +
-        "return span !== null && span.textContent !== '0:00'; }"
+        "() => { const el = document.getElementById('session-clock-app'); " +
+        "return el !== null && el.textContent.includes(':') " +
+        "&& !el.textContent.includes('0:00'); }"
       );
   }
 }

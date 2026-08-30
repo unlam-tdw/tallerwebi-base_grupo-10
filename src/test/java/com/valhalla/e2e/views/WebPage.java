@@ -5,6 +5,7 @@ import com.microsoft.playwright.Page;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 public class WebPage {
 
@@ -19,7 +20,7 @@ public class WebPage {
   }
 
   public void waitForPath(String path) {
-    page.waitForURL("**" + path);
+    page.waitForURL(Pattern.compile(".*" + Pattern.quote(path) + "(;[^/?#]*)?$"));
   }
 
   protected String getElementText(String cssSelector) {
