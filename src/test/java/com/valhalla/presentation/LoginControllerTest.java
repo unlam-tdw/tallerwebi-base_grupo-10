@@ -77,6 +77,7 @@ public class LoginControllerTest {
       .setAttribute(eq(SessionInterceptor.USER_SESSION), captor.capture());
     assertThat(captor.getValue().getEmail(), equalToIgnoringCase("dami@unlam.com"));
     assertThat(captor.getValue().getRole(), equalToIgnoringCase("ADMIN"));
+    verify(sessionMock, times(1)).setAttribute(eq("loginTime"), any(Long.class));
   }
 
   @Test
@@ -164,9 +165,11 @@ public class LoginControllerTest {
   public void shouldReturnHomeViewWithUserWhenSessionExists() {
     UserSession sessionUser = new UserSession("dami@unlam.com", "ADMIN");
     when(sessionMock.getAttribute(SessionInterceptor.USER_SESSION)).thenReturn(sessionUser);
+    when(sessionMock.getAttribute("loginTime")).thenReturn(System.currentTimeMillis());
     ModelAndView modelAndView = controller.showHome(sessionMock);
     assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/home"));
     assertThat(modelAndView.getModel().get("user"), equalTo(sessionUser));
+    assertThat(modelAndView.getModel().get("loginTime"), instanceOf(Long.class));
   }
 
   @Test

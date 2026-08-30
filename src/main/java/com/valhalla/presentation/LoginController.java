@@ -25,6 +25,7 @@ public class LoginController {
   private static final String ATTR_LOGIN_DATA = "loginData";
   private static final String ATTR_NEW_USER_DATA = "newUserData";
   private static final String ATTR_USER = "user";
+  private static final String ATTR_LOGIN_TIME = "loginTime";
 
   private final LoginService loginService;
 
@@ -53,6 +54,7 @@ public class LoginController {
     if (foundUser != null) {
       UserSession userSession = new UserSession(foundUser.getEmail(), foundUser.getRole());
       request.getSession().setAttribute(SessionInterceptor.USER_SESSION, userSession);
+      request.getSession().setAttribute(ATTR_LOGIN_TIME, System.currentTimeMillis());
       return new ModelAndView("redirect:/home");
     }
     return renderLoginWithError(loginData);
@@ -87,7 +89,7 @@ public class LoginController {
     }
     Map<String, Object> model = new ModelMap();
     model.put(ATTR_USER, userSession);
-    model.put("startedAt", httpSession.getCreationTime());
+    model.put(ATTR_LOGIN_TIME, httpSession.getAttribute(ATTR_LOGIN_TIME));
     return new ModelAndView(VIEW_HOME, model);
   }
 

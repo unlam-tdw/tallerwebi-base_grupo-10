@@ -161,12 +161,13 @@ public class LoginControllerTest {
   public void shouldShowHomeWhenAuthenticated() throws Exception {
     MockHttpSession session = new MockHttpSession();
     session.setAttribute(SessionInterceptor.USER_SESSION, new UserSession(LOGIN_EMAIL, "USER"));
+    session.setAttribute("loginTime", System.currentTimeMillis());
 
     this.mockMvc.perform(get("/home").session(session))
       .andExpect(status().isOk())
       .andExpect(view().name("pages/home"))
       .andExpect(model().attributeExists("user"))
-      .andExpect(model().attributeExists("startedAt"));
+      .andExpect(model().attributeExists("loginTime"));
   }
 
   @Test
