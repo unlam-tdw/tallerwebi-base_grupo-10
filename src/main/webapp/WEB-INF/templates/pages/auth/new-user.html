@@ -18,7 +18,7 @@
         </div>
         <div class="mt-4">
           <label for="password" class="mb-1 block text-sm font-medium text-gray-700">Password</label>
-          <input v-model="password" type="password" id="password" name="password"
+          <input v-model="password" type="password" id="password" name="password" autocomplete="new-password"
             class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
           <p v-if="errors.password" class="alert alert-danger mb-2 text-sm text-red-600">{{ errors.password }}</p>
         </div>
