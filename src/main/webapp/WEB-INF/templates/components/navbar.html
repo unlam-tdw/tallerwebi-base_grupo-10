@@ -6,7 +6,7 @@
     <span class="text-gray-300">Signed in as
       <span class="font-medium text-white" th:text="${user.email}">email</span>
     </span>
-    <form @submit.prevent="logout" th:action="@{/logout}" method="POST">
+    <form ref="form" @submit.prevent="logout" th:action="@{/logout}" method="POST">
       <button type="submit" :disabled="loading"
         class="rounded-md bg-gray-700 px-3 py-2 hover:bg-gray-600 disabled:opacity-50">
         <span v-if="loading">...</span>
@@ -25,7 +25,7 @@
       methods: {
         async logout() {
           this.loading = true;
-          const form = this.$el.querySelector('form');
+          const form = this.$refs.form;
           const res = await fetch(form.action, { method: 'POST' });
           if (res.redirected) {
             window.location.href = res.url;
