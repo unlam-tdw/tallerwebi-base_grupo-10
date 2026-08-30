@@ -188,8 +188,10 @@ private void waitForPath(String expectedPath) {
 
 ## Running Tests
 
+### Unit + integration tests
+
 ```shell
-# All Java tests (unit + integration)
+# All Java tests
 mvn test
 
 # Specific test class
@@ -197,11 +199,55 @@ mvn test -Dtest="LoginControllerTest"
 
 # Specific test method
 mvn test -Dtest="LoginControllerTest#shouldReturnToLoginWhenCredentialsAreWrong"
-
-# E2E tests (requires Docker stack running)
-docker compose --profile dev up -d
-mvn test -Dtest="LoginViewE2E"
 ```
+
+### E2E tests
+
+E2E tests need a real MySQL and Playwright's Chromium.
+
+```shell
+# 1. Start MySQL
+docker compose up -d mysql
+
+# 2. Install Chromium (first time only)
+mvn -q exec:java -e \
+  -Dexec.mainClass=com.microsoft.playwright.CLI \
+  -Dexec.args="install --with-deps chromium"
+
+# 3. Start Jetty (in a separate terminal, with DB env vars from your .env)
+mvn jetty:run
+
+# 4. Run E2E tests (in another terminal)
+mvn test -Dtest=LoginViewE2E \
+  -Djacoco.skip=true \
+  -Dcheckstyle.skip=true \
+  -Dpmd.skip=true \
+  -Dcpd.skip=true
+```
+
+### Skipping quality gates
+
+During development you may want to skip static analysis to iterate faster:
+
+```shell
+# Skip all quality gates
+mvn test \
+  -Djacoco.skip=true \
+  -Dcheckstyle.skip=true \
+  -Dpmd.skip=true \
+  -Dcpd.skip=true
+
+# Skip only Checkstyle
+mvn test -Dcheckstyle.skip=true
+
+# Skip only PMD + CPD
+mvn test -Dpmd.skip=true -Dcpd.skip=true
+
+# Skip only JaCoCo coverage check (still generates report)
+mvn test -Djacoco.skip=true
+```
+
+CI enforces these gates on `main` — always run `mvn clean verify` before pushing.
 
 ## Coverage
 
