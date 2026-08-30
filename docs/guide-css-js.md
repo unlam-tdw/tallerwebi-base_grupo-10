@@ -1,40 +1,40 @@
-# Guía: Crear una vista con Thymeleaf + CSS + JS vanilla
+# Guide: Creating a View with Thymeleaf + CSS + Vanilla JS
 
-Guía paso a paso para crear una vista sin frameworks, usando solo HTML + CSS + JavaScript.
+Step-by-step guide for creating a view without frameworks, using only HTML + CSS + JavaScript.
 
-## Estructura base
+## Base Structure
 
 ```html
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layouts/base :: head('Titulo')}"></head>
+<head th:replace="~{layouts/base :: head('Title')}"></head>
 
 <body th:replace="~{layouts/base :: layout(~{::main})}">
 
   <main class="flex-1 flex items-center justify-center p-4">
-    <!-- Tu contenido aquí -->
+    <!-- Your content here -->
   </main>
 
   <script>
-    // Tu JavaScript aquí
+    // Your JavaScript here
   </script>
 
 </body>
 </html>
 ```
 
-## Ejemplo completo: Formulario de contacto
+## Complete Example: Contact Form
 
-### 1. Crear el template
+### 1. Create the template
 
-Crear `src/main/webapp/WEB-INF/templates/pages/contact.html`:
+Create `src/main/webapp/WEB-INF/templates/pages/contact.html`:
 
 ```html
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layouts/base :: head('Contacto')}"></head>
+<head th:replace="~{layouts/base :: head('Contact')}"></head>
 
 <body th:replace="~{layouts/base :: layout(~{::main})}">
 
@@ -46,19 +46,19 @@ Crear `src/main/webapp/WEB-INF/templates/pages/contact.html`:
         method="POST"
         th:object="${contactData}">
 
-        <h3 class="mb-2 text-2xl font-semibold text-gray-900">Contacto</h3>
+        <h3 class="mb-2 text-2xl font-semibold text-gray-900">Contact</h3>
         <hr class="mb-6 border-gray-200">
 
-        <!-- Campo nombre -->
+        <!-- Name field -->
         <div class="mb-4">
-          <label for="name" class="mb-1 block text-sm font-medium text-gray-700">Nombre</label>
+          <label for="name" class="mb-1 block text-sm font-medium text-gray-700">Name</label>
           <input th:field="*{name}" id="name" type="text"
             class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
           <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
             class="mt-1 text-sm text-red-600"></p>
         </div>
 
-        <!-- Campo email -->
+        <!-- Email field -->
         <div class="mb-4">
           <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Email</label>
           <input th:field="*{email}" id="email" type="email"
@@ -67,22 +67,22 @@ Crear `src/main/webapp/WEB-INF/templates/pages/contact.html`:
             class="mt-1 text-sm text-red-600"></p>
         </div>
 
-        <!-- Campo mensaje -->
+        <!-- Message field -->
         <div class="mb-4">
-          <label for="message" class="mb-1 block text-sm font-medium text-gray-700">Mensaje</label>
+          <label for="message" class="mb-1 block text-sm font-medium text-gray-700">Message</label>
           <textarea th:field="*{message}" id="message" rows="4"
             class="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"></textarea>
           <p th:if="${#fields.hasErrors('message')}" th:errors="*{message}"
             class="mt-1 text-sm text-red-600"></p>
         </div>
 
-        <!-- Botón submit -->
+        <!-- Submit button -->
         <button id="btn-submit" type="submit"
           class="w-full rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700">
-          Enviar
+          Send
         </button>
 
-        <!-- Error general -->
+        <!-- General error -->
         <p th:if="${error}" class="mt-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700"
           th:text="${error}"></p>
       </form>
@@ -110,7 +110,7 @@ Crear `src/main/webapp/WEB-INF/templates/pages/contact.html`:
 </html>
 ```
 
-### 2. Crear el controller
+### 2. Create the controller
 
 ```java
 @Controller
@@ -132,39 +132,39 @@ public class ContactController {
 }
 ```
 
-### 3. Crear el DTO
+### 3. Create the DTO
 
 ```java
 public class ContactData {
 
-  @NotBlank(message = "Nombre es requerido")
+  @NotBlank(message = "Name is required")
   private String name;
 
-  @NotBlank(message = "Email es requerido")
-  @Email(message = "Email no es válido")
+  @NotBlank(message = "Email is required")
+  @Email(message = "Email is not valid")
   private String email;
 
-  @NotBlank(message = "Mensaje es requerido")
+  @NotBlank(message = "Message is required")
   private String message;
 
-  // getters y setters
+  // getters and setters
 }
 ```
 
-## Patrones comunes
+## Common Patterns
 
-### Formulario sin JS (tradicional)
+### Form without JS (traditional)
 
 ```html
-<!-- El form hace submit tradicional (reload de página) -->
+<!-- Form does traditional submit (page reload) -->
 <form th:action="@{/contact}" method="POST" th:object="${contactData}">
   <input th:field="*{name}" type="text" />
   <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
-  <button type="submit">Enviar</button>
+  <button type="submit">Send</button>
 </form>
 ```
 
-### Formulario con JS (fetch, sin reload)
+### Form with JS (fetch, no reload)
 
 ```javascript
 document.getElementById('my-form').addEventListener('submit', async function(e) {
@@ -182,58 +182,58 @@ document.getElementById('my-form').addEventListener('submit', async function(e) 
 });
 ```
 
-### Errores con Thymeleaf
+### Errors with Thymeleaf
 
 ```html
-<!-- Error de campo -->
+<!-- Field error -->
 <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-sm text-red-600"></p>
 
-<!-- Error general -->
+<!-- General error -->
 <p th:if="${error}" th:text="${error}" class="rounded-md bg-red-100 px-4 py-3 text-sm text-red-700"></p>
 ```
 
-### Condicional con Thymeleaf
+### Conditionals with Thymeleaf
 
 ```html
-<!-- Mostrar algo solo si hay usuario -->
+<!-- Show something only if user exists -->
 <div th:if="${user != null}">
   <span th:text="${user.email}">email</span>
 </div>
 
-<!-- Mostrar algo solo si NO hay usuario -->
+<!-- Show something only if NO user -->
 <div th:if="${user == null}">
-  <a th:href="@{/login}">Iniciar sesión</a>
+  <a th:href="@{/login}">Sign in</a>
 </div>
 ```
 
-### Loop con Thymeleaf
+### Loop with Thymeleaf
 
 ```html
 <ul>
   <li th:each="item : ${items}" class="py-2">
-    <span th:text="${item.name}">Nombre</span>
+    <span th:text="${item.name}">Name</span>
   </li>
 </ul>
 ```
 
-## Cuándo usar JS vanilla vs Vue
+## When to use Vanilla JS vs Vue
 
-| Situación | JS vanilla | Vue |
+| Scenario | Vanilla JS | Vue |
 | :--- | :--- | :--- |
-| Form simple (1-2 campos) | ✅ Mejor | ❌ Overkill |
-| Form con loading state | ⚠️ Manual | ✅ reactivo |
-| Errores inline | ⚠️ innerHTML | ✅ v-if |
-| Modal de confirmación | ⚠️ DOM manual | ✅ v-if reactivo |
-| Lista reactiva | ❌ Doloroso | ✅ v-for |
-| Timer / clock | ✅ setInterval | ✅ data() |
-| Sin frameworks permitidos | ✅ Única opción | ❌ No usar |
+| Simple form (1-2 fields) | Better | Overkill |
+| Form with loading state | Manual | Reactive |
+| Inline errors | innerHTML | v-if |
+| Confirmation modal | Manual DOM | Reactive v-if |
+| Reactive list | Painful | v-for |
+| Timer / clock | setInterval | data() |
+| No frameworks allowed | Only option | Do not use |
 
-## Reglas
+## Rules
 
-1. **Siempre `th:action` + `method="POST"`** — funciona sin JS
-2. **`id` en el form y en el contenedor** — para JS y para Thymeleaf
-3. **`th:field` para bindear** — Thymeleaf maneja los valores
-4. **`th:if` para errores** — solo se muestran si existen
-5. **`async/await` en fetch** — código limpio
-6. **`res.redirected`** — seguir redirects del server
-7. **`innerHTML` en error** — reemplazar solo el form area
+1. **Always `th:action` + `method="POST"`** — works without JS
+2. **`id` on the form and container** — for JS and Thymeleaf
+3. **`th:field` for binding** — Thymeleaf handles values
+4. **`th:if` for errors** — only shown if they exist
+5. **`async/await` in fetch** — clean code
+6. **`res.redirected`** — follow server redirects
+7. **`innerHTML` on error** — replace only the form area

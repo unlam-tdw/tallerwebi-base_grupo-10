@@ -262,7 +262,7 @@ Create `src/main/webapp/WEB-INF/templates/pages/products/new.html`:
   <main class="flex-1 flex items-center justify-center p-4">
     <div id="product-app" class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
 
-      <form @submit.prevent="submit" action="#" th:action="@{/products}" method="POST">
+      <form ref="form" @submit.prevent="submit" action="#" th:action="@{/products}" method="POST">
         <h3 class="mb-2 text-2xl font-semibold text-gray-900">New Product</h3>
         <hr class="mb-6 border-gray-200">
 
@@ -295,30 +295,12 @@ Create `src/main/webapp/WEB-INF/templates/pages/products/new.html`:
   <script>
     Vue.createApp({
       data() {
-        return { name: '', price: '', error: '', errors: {}, loading: false }
+        return { name: '', price: '', error: '[[${error}]]', loading: false }
       },
       methods: {
-        async submit() {
+        submit() {
           this.loading = true;
-          this.error = '';
-          this.errors = {};
-          const form = this.$el.querySelector('form');
-          const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
-          if (res.redirected) {
-            window.location.href = res.url;
-          } else {
-            const html = await res.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            const fieldErrors = doc.querySelectorAll('.alert-danger');
-            fieldErrors.forEach(el => {
-              if (el.previousElementSibling && el.previousElementSibling.name) {
-                this.errors[el.previousElementSibling.name] = el.textContent.trim();
-              } else if (!el.id) {
-                this.error = el.textContent.trim();
-              }
-            });
-          }
-          this.loading = false;
+          this.$refs.form.submit();
         }
       }
     }).mount('#product-app');

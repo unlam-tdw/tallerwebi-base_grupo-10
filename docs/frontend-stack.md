@@ -60,11 +60,11 @@ independently, using Thymeleaf to render initial HTML and Vue to enhance it.
 ### Conventions used in this project
 
 **Progressive enhancement.** Forms keep their native `th:action` / `method="POST"`
-so they work without JavaScript. Vue enhances them with fetch-based submission,
-loading states, and inline error display:
+so they work without JavaScript. Vue enhances them with loading states and
+reactive UI. The server handles all business logic:
 
 ```html
-<form @submit.prevent="submit" action="#"
+<form ref="form" @submit.prevent="submit" action="#"
   th:action="@{/validate-login}" method="POST">
   <input v-model="email" name="email" type="email" />
   <button :disabled="loading">Sign in</button>
@@ -73,11 +73,12 @@ loading states, and inline error display:
 <script>
   Vue.createApp({
     data() {
-      return { email: '', loading: false, error: '' }
+      return { email: '', loading: false, error: '[[${error}]]' }
     },
     methods: {
-      async submit() {
-        // fetch + handle redirect/error
+      submit() {
+        this.loading = true;
+        this.$refs.form.submit();  // POST nativo del browser
       }
     }
   }).mount('#login-app');
@@ -85,12 +86,13 @@ loading states, and inline error display:
 ```
 
 **Server data enters via Thymeleaf.** The server renders initial values with
-`th:field`, `th:text`, or `data-*` attributes. Vue reads these on mount and
+`[[${variable}]]` syntax (Thymeleaf expressions inside Vue data blocks) or
+via `data-*` attributes for non-string values. Vue reads these on mount and
 takes over from there.
 
-**Error handling.** When the server returns HTML (validation errors), Vue parses
-the response and extracts error messages into reactive state (`v-if="error"`).
-When the server redirects (success), Vue follows the redirect.
+**Error handling.** The server returns the page with error in the model.
+Thymeleaf renders `error: '[[${error}]]'` into Vue's data. Vue displays it
+with `v-if="error"`. No client-side HTML parsing needed.
 
 **Loading states.** Vue's reactive `loading` property disables buttons and shows
 feedback during submission — no round-trip flicker.
@@ -130,7 +132,8 @@ Docker WAR (it detects it is not running from a source checkout).
 - **MockMvc integration**: MockMvc tests verify redirects and view names.
   No custom header logic to test.
 - **E2E (Playwright, real browser)**: Standard navigation assertions.
-  `mvn test -Dtest=LoginViewE2E` runs them and requires MySQL + the app up (or use `mvn clean jetty:run -Pdev`).
+  `mvn test -Dtest=LoginViewE2E` runs them and requires MySQL + the app up
+  (`docker compose --profile dev up -d`).
 
 ## 6. Vendored scripts (pinned versions)
 

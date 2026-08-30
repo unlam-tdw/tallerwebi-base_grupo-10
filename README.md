@@ -18,18 +18,10 @@ The app runs at [http://localhost:8080/spring](http://localhost:8080/spring).
 ### Local development (recommended)
 
 ```shell
-mvn clean jetty:run -Pdev
+docker compose --profile dev up
 ```
 
-This starts MySQL in Docker automatically, then runs the app on http://localhost:8080/spring.
-
-### Alternative: MySQL already running
-
-If you already have MySQL on port 3306:
-
-```shell
-mvn clean jetty:run
-```
+This starts MySQL + the app in Docker with hot-reload. The app is available at http://localhost:8080/spring.
 
 ## Project Structure
 

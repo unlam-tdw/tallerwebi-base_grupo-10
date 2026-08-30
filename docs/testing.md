@@ -198,7 +198,8 @@ mvn test -Dtest="LoginControllerTest"
 # Specific test method
 mvn test -Dtest="LoginControllerTest#shouldReturnToLoginWhenCredentialsAreWrong"
 
-# E2E tests (requires MySQL + app, or use -Pdev)
+# E2E tests (requires Docker stack running)
+docker compose --profile dev up -d
 mvn test -Dtest="LoginViewE2E"
 ```
 
