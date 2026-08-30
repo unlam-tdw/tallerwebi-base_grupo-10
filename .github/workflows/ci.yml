@@ -59,7 +59,9 @@ jobs:
           mvn -q exec:java -e \
             -Dexec.mainClass=com.microsoft.playwright.CLI \
             -Dexec.args="install --with-deps chromium"
-          sudo apt-get install -y libgtk-4-1
+          sudo mvn -q exec:java -e \
+            -Dexec.mainClass=com.microsoft.playwright.CLI \
+            -Dexec.args="install-deps"
 
       - name: Package app (skip tests; they run in the backend job)
         run: |
