@@ -27,48 +27,47 @@
           <span v-if="loading">Registering...</span>
           <span v-else>Register</span>
         </button>
-        <p v-if="error" class="alert alert-danger my-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{{ error }}</p>
+        <p v-if="error" th:text="${error}" class="alert alert-danger my-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{{ error }}</p>
       </form>
     </div>
-  </main>
-
-  <script>
-    Vue.createApp({
-      data() {
-        return {
-          email: '',
-          password: '',
-          error: '',
-          errors: {},
-          loading: false
-        }
-      },
-      methods: {
-        async submit() {
-          this.loading = true;
-          this.error = '';
-          this.errors = {};
-          const form = this.$el.querySelector('form');
-          const res = await fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) });
-          if (res.redirected) {
-            window.location.href = res.url;
-          } else {
-            const html = await res.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            const fieldErrors = doc.querySelectorAll('.alert-danger');
-            fieldErrors.forEach(el => {
-              if (el.previousElementSibling && el.previousElementSibling.name) {
-                this.errors[el.previousElementSibling.name] = el.textContent.trim();
-              } else if (!el.id) {
-                this.error = el.textContent.trim();
-              }
-            });
+    <script>
+      Vue.createApp({
+        data() {
+          return {
+            email: '',
+            password: '',
+            error: '',
+            errors: {},
+            loading: false
           }
-          this.loading = false;
+        },
+        methods: {
+          async submit() {
+            this.loading = true;
+            this.error = '';
+            this.errors = {};
+            const form = this.$el.querySelector('form');
+            const res = await fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) });
+            if (res.redirected) {
+              window.location.href = res.url;
+            } else {
+              const html = await res.text();
+              const doc = new DOMParser().parseFromString(html, 'text/html');
+              const fieldErrors = doc.querySelectorAll('.alert-danger');
+              fieldErrors.forEach(el => {
+                if (el.previousElementSibling && el.previousElementSibling.name) {
+                  this.errors[el.previousElementSibling.name] = el.textContent.trim();
+                } else if (!el.id) {
+                  this.error = el.textContent.trim();
+                }
+              });
+            }
+            this.loading = false;
+          }
         }
-      }
-    }).mount('#register-app');
-  </script>
+      }).mount('#register-app');
+    </script>
+  </main>
 
 </body>
 
