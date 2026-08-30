@@ -1,0 +1,22 @@
+# Development image: JDK + Maven, runs mvn jetty:run with hot-reload.
+# Source code is mounted via volume — no build step needed.
+FROM eclipse-temurin:25-jdk
+
+ENV MAVEN_VERSION=3.9.9
+ENV MAVEN_HOME=/opt/maven
+
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \
+    wget -q https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz && \
+    tar -xzf /tmp/maven.tar.gz -C /opt && \
+    mv /opt/apache-maven-${MAVEN_VERSION} $MAVEN_HOME && \
+    rm /tmp/maven.tar.gz && \
+    apt-get remove -y wget && apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="$MAVEN_HOME/bin:$PATH"
+
+WORKDIR /workspace
+
+EXPOSE 8080
+
+CMD ["mvn", "jetty:run", "-DskipTests"]

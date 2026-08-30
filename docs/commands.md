@@ -49,38 +49,21 @@ mvn test
 ### Local development (recommended)
 
 ```shell
-# Start MySQL + app with a single command
-mvn clean jetty:run -Pdev
-
-# Stop (MySQL keeps running)
-Ctrl+C
-```
-
-### Docker Compose (full stack in Docker)
-
-```shell
-# Start everything in Docker
-mvn clean package
-docker compose up --build
+# Start MySQL + app with hot-reload
+docker compose --profile dev up
 
 # Stop and remove containers + volumes
-docker compose down --rmi local
+docker compose --profile dev down --rmi local
 ```
 
-### Docker manual
+### Production build
 
 ```shell
-# Create an image named "mysql"
-docker build -f DockerfileSQL -t mysql .
+# Build and start the full stack
+docker compose --profile prod up --build
 
-# Run MySQL container
-docker run --env-file .env --name valhalla-mysql -d -p 3306:3306 mysql
-
-# Create an image named "valhalla"
-docker build -f DockerfileJetty -t valhalla .
-
-# Run the app
-docker run -p 8080:8080 valhalla
+# Stop and remove containers + volumes
+docker compose --profile prod down --rmi local
 ```
 
 ### Common commands
@@ -114,7 +97,8 @@ docker run -it --entrypoint /bin/bash valhalla
 # Run all Java tests (uses in-memory HSQLDB, no MySQL needed)
 mvn test
 
-# Run E2E tests (requires MySQL + app running, or use -Pdev)
+# Run E2E tests (requires Docker stack running)
+docker compose --profile dev up -d
 mvn test -Dtest="LoginViewE2E"
 
 # Run a specific E2E test

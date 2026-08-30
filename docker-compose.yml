@@ -1,8 +1,6 @@
 services:
   mysql:
-    build:
-      context: .
-      dockerfile: DockerfileSQL
+    image: mysql:8.0
     container_name: valhalla-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -16,32 +14,65 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - valhalla-network
+      - valhalla
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     restart: unless-stopped
 
-  jetty-app:
+  app:
+    profiles: ["dev"]
     build:
       context: .
-      dockerfile: DockerfileJetty
-    container_name: valhalla-jetty
+      dockerfile: DockerfileDev
+    container_name: valhalla-app-dev
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
-      - valhalla-network
-    restart: unless-stopped
+      - valhalla
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - .:/workspace
+      - maven_cache:/root/.m2
+    restart: unless-stopped
+
+  app-prod:
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: DockerfileProd
+    container_name: valhalla-app-prod
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - valhalla
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
 
 volumes:
   mysql_data:
     driver: local
+  maven_cache:
+    driver: local
 
 networks:
-  valhalla-network:
-    driver: bridge 
+  valhalla:
+    driver: bridge
