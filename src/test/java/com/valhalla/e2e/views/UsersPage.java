@@ -7,6 +7,9 @@ public class UsersPage extends WebPage {
 
   public UsersPage(Page page) {
     super(page);
+  }
+
+  public void navigateToUsers() {
     page.navigate("localhost:8080/users");
   }
 
@@ -15,7 +18,7 @@ public class UsersPage extends WebPage {
   }
 
   public int getUserCount() {
-    return (int) this.page.locator("tbody tr").count();
+    return this.page.locator("tbody tr").count();
   }
 
   public boolean hasRowWithEmail(String email) {

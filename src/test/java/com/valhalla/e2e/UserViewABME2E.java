@@ -41,7 +41,9 @@ public class UserViewABME2E {
 
     context = browser.newContext();
     Page page = context.newPage();
+    loginAsAdmin(page);
     usersPage = new UsersPage(page);
+    usersPage.navigateToUsers();
   }
 
   @AfterEach
@@ -103,6 +105,14 @@ public class UserViewABME2E {
   }
 
   // --- given ---
+
+  private void loginAsAdmin(Page page) {
+    page.navigate("localhost:8080/login");
+    page.fill("#email", "test@unlam.edu.ar");
+    page.fill("#password", "test");
+    page.click("#btn-login");
+    page.waitForURL(".*\\/home.*");
+  }
 
   private void givenAdminIsOnUsersPage() throws MalformedURLException {
     usersPage.waitForPath("/users");
