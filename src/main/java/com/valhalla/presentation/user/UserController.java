@@ -1,7 +1,9 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.user;
 
-import com.valhalla.domain.User;
-import com.valhalla.domain.UserService;
+import com.valhalla.domain.user.User;
+import com.valhalla.domain.user.UserService;
+import com.valhalla.presentation.shared.SessionInterceptor;
+import com.valhalla.presentation.shared.UserSession;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.Map;

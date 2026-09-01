@@ -1,22 +1,20 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.login;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
-public class NewUserRequest {
+public class LoginRequest {
 
   @NotBlank(message = "Email is required")
   @Email(message = "Email is not valid")
   private String email;
 
   @NotBlank(message = "Password is required")
-  @Size(min = 6, message = "Password must be at least 6 characters")
   private String password;
 
-  public NewUserRequest() {}
+  public LoginRequest() {}
 
-  public NewUserRequest(String email, String password) {
+  public LoginRequest(String email, String password) {
     this.email = email;
     this.password = password;
   }

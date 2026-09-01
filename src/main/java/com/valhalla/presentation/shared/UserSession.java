@@ -1,4 +1,4 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.shared;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package com.valhalla.domain;
+package com.valhalla.domain.user;
 
 import java.util.List;
 

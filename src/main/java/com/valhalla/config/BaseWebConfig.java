@@ -1,6 +1,6 @@
 package com.valhalla.config;
 
-import com.valhalla.presentation.SessionInterceptor;
+import com.valhalla.presentation.shared.SessionInterceptor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;

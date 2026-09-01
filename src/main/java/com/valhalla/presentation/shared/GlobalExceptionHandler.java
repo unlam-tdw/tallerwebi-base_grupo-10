@@ -1,7 +1,8 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.shared;
 
 import com.valhalla.domain.exception.UserAlreadyExists;
 import com.valhalla.domain.exception.UserNotFoundException;
+import com.valhalla.presentation.user.EditUserRequest;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;

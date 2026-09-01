@@ -1,7 +1,7 @@
-package com.valhalla.infrastructure;
+package com.valhalla.infrastructure.user;
 
-import com.valhalla.domain.User;
 import com.valhalla.domain.exception.UserNotFoundException;
+import com.valhalla.domain.user.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

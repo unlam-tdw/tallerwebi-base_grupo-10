@@ -1,4 +1,4 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.login;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,9 +14,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.valhalla.domain.LoginService;
-import com.valhalla.domain.User;
 import com.valhalla.domain.exception.UserAlreadyExists;
+import com.valhalla.domain.login.LoginService;
+import com.valhalla.domain.user.User;
+import com.valhalla.presentation.shared.NewUserRequest;
+import com.valhalla.presentation.shared.SessionInterceptor;
+import com.valhalla.presentation.shared.UserSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;

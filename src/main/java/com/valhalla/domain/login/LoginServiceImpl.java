@@ -1,7 +1,8 @@
-package com.valhalla.domain;
+package com.valhalla.domain.login;
 
 import com.valhalla.domain.exception.UserAlreadyExists;
-import com.valhalla.infrastructure.UserRepository;
+import com.valhalla.domain.user.User;
+import com.valhalla.infrastructure.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

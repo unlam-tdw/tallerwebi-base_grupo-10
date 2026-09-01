@@ -1,4 +1,4 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

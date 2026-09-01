@@ -1,4 +1,4 @@
-package com.valhalla.infrastructure;
+package com.valhalla.infrastructure.user;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -7,8 +7,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.valhalla.domain.User;
 import com.valhalla.domain.exception.UserNotFoundException;
+import com.valhalla.domain.user.User;
 import com.valhalla.integration.JpaIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

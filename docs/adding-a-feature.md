@@ -8,10 +8,10 @@ Let's say we want to add product listing and creation.
 
 ## Step 1: Create the Domain Entity
 
-Create `src/main/java/com/valhalla/domain/Product.java`:
+Create `src/main/java/com/valhalla/domain/product/Product.java`:
 
 ```java
-package com.valhalla.domain;
+package com.valhalla.domain.product;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,12 +48,12 @@ public class Product {
 
 ## Step 2: Create the Repository
 
-Create `src/main/java/com/valhalla/infrastructure/ProductRepository.java`:
+Create `src/main/java/com/valhalla/infrastructure/product/ProductRepository.java`:
 
 ```java
-package com.valhalla.infrastructure;
+package com.valhalla.infrastructure.product;
 
-import com.valhalla.domain.Product;
+import com.valhalla.domain.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -62,10 +62,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 ## Step 3: Create the Service Interface
 
-Create `src/main/java/com/valhalla/domain/ProductService.java`:
+Create `src/main/java/com/valhalla/domain/product/ProductService.java`:
 
 ```java
-package com.valhalla.domain;
+package com.valhalla.domain.product;
 
 import java.util.List;
 
@@ -77,12 +77,12 @@ public interface ProductService {
 
 ## Step 4: Create the Service Implementation
 
-Create `src/main/java/com/valhalla/domain/ProductServiceImpl.java`:
+Create `src/main/java/com/valhalla/domain/product/ProductServiceImpl.java`:
 
 ```java
-package com.valhalla.domain;
+package com.valhalla.domain.product;
 
-import com.valhalla.infrastructure.ProductRepository;
+import com.valhalla.infrastructure.product.ProductRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,10 +111,10 @@ public class ProductServiceImpl implements ProductService {
 
 ## Step 5: Create the DTO
 
-Create `src/main/java/com/valhalla/presentation/ProductRequest.java`:
+Create `src/main/java/com/valhalla/presentation/product/ProductRequest.java`:
 
 ```java
-package com.valhalla.presentation;
+package com.valhalla.presentation.product;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -140,12 +140,12 @@ public class ProductRequest {
 
 ## Step 6: Create the Controller
 
-Create `src/main/java/com/valhalla/presentation/ProductController.java`:
+Create `src/main/java/com/valhalla/presentation/product/ProductController.java`:
 
 ```java
-package com.valhalla.presentation;
+package com.valhalla.presentation.product;
 
-import com.valhalla.domain.ProductService;
+import com.valhalla.domain.product.ProductService;
 import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -320,12 +320,12 @@ Navigate to [http://localhost:8080/products](http://localhost:8080/products).
 
 ## Summary
 
-| Step | Layer | File |
-| :--- | :--- | :--- |
-| 1 | domain | `Product.java` |
-| 2 | infrastructure | `ProductRepository.java` |
-| 3 | domain | `ProductService.java` (interface) |
-| 4 | domain | `ProductServiceImpl.java` |
-| 5 | presentation | `ProductRequest.java` |
-| 6 | presentation | `ProductController.java` |
-| 7 | templates | `pages/products/list.html`, `pages/products/new.html` |
+| Step | Layer | Package | File |
+| :--- | :--- | :--- | :--- |
+| 1 | domain | `com.valhalla.domain.product` | `Product.java` |
+| 2 | infrastructure | `com.valhalla.infrastructure.product` | `ProductRepository.java` |
+| 3 | domain | `com.valhalla.domain.product` | `ProductService.java` (interface) |
+| 4 | domain | `com.valhalla.domain.product` | `ProductServiceImpl.java` |
+| 5 | presentation | `com.valhalla.presentation.product` | `ProductRequest.java` |
+| 6 | presentation | `com.valhalla.presentation.product` | `ProductController.java` |
+| 7 | templates | | `pages/products/list.html`, `pages/products/new.html` |

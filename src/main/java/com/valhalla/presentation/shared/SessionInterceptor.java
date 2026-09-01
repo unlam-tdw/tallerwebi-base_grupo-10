@@ -1,4 +1,4 @@
-package com.valhalla.presentation;
+package com.valhalla.presentation.shared;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -21,6 +21,8 @@ Validation happens in two places:
 Using Hibernate Validator annotations on DTOs:
 
 ```java
+package com.valhalla.presentation.login;
+
 public class LoginRequest {
 
   @NotBlank(message = "Email is required")
@@ -35,6 +37,8 @@ public class LoginRequest {
 Controller checks `BindingResult`:
 
 ```java
+package com.valhalla.presentation.login;
+
 @PostMapping("/validate-login")
 public ModelAndView validateLogin(
   @Valid @ModelAttribute("loginData") LoginRequest loginData,
@@ -59,6 +63,8 @@ Template displays errors:
 Services throw custom exceptions:
 
 ```java
+package com.valhalla.domain.login;
+
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -98,6 +104,8 @@ public class UserNotFoundException extends RuntimeException {}
 `GlobalExceptionHandler` is a `@ControllerAdvice` that catches exceptions thrown by any controller:
 
 ```java
+package com.valhalla.presentation.shared;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
