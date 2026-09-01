@@ -21,7 +21,7 @@ The app runs at [http://localhost:8080/spring](http://localhost:8080/spring).
 docker compose --profile dev up
 ```
 
-This starts MySQL + the app in Docker with hot-reload. The app is available at http://localhost:8080/spring.
+This starts PostgreSQL + the app in Docker with hot-reload. The app is available at http://localhost:8080.
 
 ## Project Structure
 

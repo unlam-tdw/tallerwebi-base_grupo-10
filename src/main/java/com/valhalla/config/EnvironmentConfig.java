@@ -10,7 +10,7 @@ public final class EnvironmentConfig {
   private static final String ENV_DB_PASSWORD = "DB_PASSWORD";
 
   private static final String DEFAULT_DB_HOST = "localhost";
-  private static final String DEFAULT_DB_PORT = "3306";
+  private static final String DEFAULT_DB_PORT = "5432";
   private static final String DEFAULT_DB_NAME = "valhalla";
   private static final String DEFAULT_DB_USER = "user";
   private static final String DEFAULT_DB_PASSWORD = "user";
@@ -38,12 +38,7 @@ public final class EnvironmentConfig {
   }
 
   public static String databaseUrl() {
-    return String.format(
-      "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
-      dbHost(),
-      dbPort(),
-      dbName()
-    );
+    return String.format("jdbc:postgresql://%s:%s/%s", dbHost(), dbPort(), dbName());
   }
 
   private static String envValue(String variable, String defaultValue) {

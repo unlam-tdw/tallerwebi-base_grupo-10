@@ -26,20 +26,19 @@ jobs:
           mvn clean verify --fail-at-end
 
   e2e:
-    name: E2E (Playwright against a running Jetty + MySQL)
+    name: E2E (Playwright against a running Jetty + PostgreSQL)
     runs-on: ubuntu-latest
     services:
-      mysql:
-        image: mysql:8.0
+      postgres:
+        image: postgres:16
         env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: valhalla
-          MYSQL_USER: user
-          MYSQL_PASSWORD: user
+          POSTGRES_DB: valhalla
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: user
         ports:
-          - 3306:3306
+          - 5432:5432
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -u user -puser"
+          --health-cmd="pg_isready -U user -d valhalla"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -67,10 +66,10 @@ jobs:
         run: |
           mvn -q package -DskipTests
 
-      - name: Start Jetty against local MySQL
+      - name: Start Jetty against local PostgreSQL
         env:
           DB_HOST: localhost
-          DB_PORT: "3306"
+          DB_PORT: "5432"
           DB_NAME: valhalla
           DB_USER: user
           DB_PASSWORD: user
@@ -94,7 +93,7 @@ jobs:
       - name: Run E2E tests
         env:
           DB_HOST: localhost
-          DB_PORT: "3306"
+          DB_PORT: "5432"
           DB_NAME: valhalla
           DB_USER: user
           DB_PASSWORD: user

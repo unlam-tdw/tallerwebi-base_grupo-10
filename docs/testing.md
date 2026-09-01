@@ -144,7 +144,7 @@ public void setUp() {
 
 ## E2E Tests (`e2e/`)
 
-Playwright tests with a real browser. Requires MySQL + app running.
+Playwright tests with a real browser. Requires PostgreSQL + app running.
 
 ### Pattern
 
@@ -157,7 +157,7 @@ public class LoginViewE2E {
     page.locator("#email").fill("test@unlam.edu.ar");
     page.locator("#password").fill("test");
     page.locator("#btn-login").click();
-    waitForPath("/spring/home");
+    waitForPath("/home");
   }
 }
 ```
@@ -203,11 +203,11 @@ mvn test -Dtest="LoginControllerTest#shouldReturnToLoginWhenCredentialsAreWrong"
 
 ### E2E tests
 
-E2E tests need a real MySQL and Playwright's Chromium.
+E2E tests need a real PostgreSQL and Playwright's Chromium.
 
 ```shell
-# 1. Start MySQL
-docker compose up -d mysql
+# 1. Start PostgreSQL
+docker compose up -d postgres
 
 # 2. Install Chromium (first time only)
 mvn -q exec:java -e \

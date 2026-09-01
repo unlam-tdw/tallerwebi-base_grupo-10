@@ -132,7 +132,7 @@ Docker WAR (it detects it is not running from a source checkout).
 - **MockMvc integration**: MockMvc tests verify redirects and view names.
   No custom header logic to test.
 - **E2E (Playwright, real browser)**: Standard navigation assertions.
-  `mvn test -Dtest=LoginViewE2E` runs them and requires MySQL + the app up
+  `mvn test -Dtest=LoginViewE2E` runs them and requires PostgreSQL + the app up
   (`docker compose --profile dev up -d`).
 
 ## 6. Vendored scripts (pinned versions)

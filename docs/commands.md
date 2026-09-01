@@ -49,7 +49,7 @@ mvn test
 ### Local development (recommended)
 
 ```shell
-# Start MySQL + app with hot-reload
+# Start PostgreSQL + app with hot-reload
 docker compose --profile dev up
 
 # Stop and remove containers + volumes
@@ -94,7 +94,7 @@ docker run -it --entrypoint /bin/bash valhalla
 ## Testing
 
 ```shell
-# Run all Java tests (uses in-memory HSQLDB, no MySQL needed)
+# Run all Java tests (uses in-memory HSQLDB, no PostgreSQL needed)
 mvn test
 
 # Run E2E tests (requires Docker stack running)
