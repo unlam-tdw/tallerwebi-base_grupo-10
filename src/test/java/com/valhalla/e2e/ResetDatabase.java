@@ -16,11 +16,11 @@ public class ResetDatabase {
     String bcryptHash = "$2a$10$ShOBUPfT5jLImCcQoWkM6edIQ3xjC6XYzgC7RDOPLqGiTRgHMkh2K";
     String[] statements = {
       "DELETE FROM users",
-      "ALTER TABLE users AUTO_INCREMENT = 1",
-      "INSERT INTO users(id, email, password, role, active) " +
-      "VALUES(NULL, 'test@unlam.edu.ar', '" +
+      "ALTER SEQUENCE users_id_seq RESTART WITH 1",
+      "INSERT INTO users(email, password, role, active) " +
+      "VALUES('test@unlam.edu.ar', '" +
       bcryptHash +
-      "', 'ADMIN', TRUE)",
+      "', 'ADMIN', TRUE) ON CONFLICT (email) DO NOTHING",
     };
 
     try (Connection connection = openConnection()) {
