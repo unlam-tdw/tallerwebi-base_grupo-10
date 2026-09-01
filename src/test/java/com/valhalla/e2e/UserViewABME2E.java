@@ -158,7 +158,13 @@ public class UserViewABME2E {
   // --- then ---
 
   private void thenShouldSeeHeading(String expected) {
-    String heading = usersPage.getHeading();
+    String heading;
+    if (usersPage.getCurrentUrl().getPath().contains("/users/new") ||
+        usersPage.getCurrentUrl().getPath().matches(".*/users/\\d+")) {
+      heading = new UserFormPage(context.pages().get(0)).getHeading();
+    } else {
+      heading = usersPage.getHeading();
+    }
     assertThat(heading, equalToIgnoringCase(expected));
   }
 
