@@ -11,7 +11,7 @@ mvn clean package
 docker compose up --build
 ```
 
-The app runs at [http://localhost:8080/spring](http://localhost:8080/spring).
+The app runs at [http://localhost:8080](http://localhost:8080).
 
 **Default credentials:** `test@unlam.edu.ar` / `test`
 

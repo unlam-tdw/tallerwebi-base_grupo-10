@@ -316,7 +316,7 @@ Create `src/main/webapp/WEB-INF/templates/pages/products/new.html`:
 mvn clean jetty:run
 ```
 
-Navigate to [http://localhost:8080/spring/products](http://localhost:8080/spring/products).
+Navigate to [http://localhost:8080/products](http://localhost:8080/products).
 
 ## Summary
 

@@ -114,7 +114,7 @@ without interactivity don't mount Vue at all. Vue is optional per page.
 
 ## 4. Development live reload
 
-`jetty:run` starts a controller that answers `GET /spring/reload/version` with
+`jetty:run` starts a controller that answers `GET /reload/version` with
 a token built from the boot id plus signatures of:
 
 - `WEB-INF/templates/**/*.html`
