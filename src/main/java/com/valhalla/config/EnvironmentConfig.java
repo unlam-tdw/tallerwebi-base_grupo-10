@@ -38,11 +38,7 @@ public final class EnvironmentConfig {
   }
 
   public static String databaseUrl() {
-    String url = String.format("jdbc:postgresql://%s:%s/%s", dbHost(), dbPort(), dbName());
-    if (System.getenv("RENDER_SERVICE_ID") != null) {
-      url += "?sslmode=require";
-    }
-    return url;
+    return String.format("jdbc:postgresql://%s:%s/%s", dbHost(), dbPort(), dbName());
   }
 
   private static String envValue(String variable, String defaultValue) {
