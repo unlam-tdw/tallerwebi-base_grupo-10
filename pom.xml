@@ -455,7 +455,7 @@
                     <scanIntervalSeconds>1</scanIntervalSeconds>
                     <reload>automatic</reload>
                     <webApp>
-                        <contextPath>/spring</contextPath>
+                        <contextPath>/</contextPath>
                     </webApp>
                 </configuration>
             </plugin>

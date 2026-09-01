@@ -6,7 +6,7 @@ public class LoginPage extends WebPage {
 
   public LoginPage(Page page) {
     super(page);
-    page.navigate("localhost:8080/spring/login");
+    page.navigate("localhost:8080/login");
   }
 
   public String getNavbarText() {
