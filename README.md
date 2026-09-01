@@ -7,9 +7,12 @@ Spring MVC + Thymeleaf + Tailwind project for Taller Web I (UNLaM).
 ```shell
 git clone <repo-url>
 cd valhalla
+cp .env.example .env
 mvn clean package
 docker compose up --build
 ```
+
+`--build` forces Docker to rebuild the image from the Dockerfile — without it Docker would use a cached (stale) image if you changed `pom.xml` or dependencies.
 
 The app runs at [http://localhost:8080](http://localhost:8080).
 
@@ -18,19 +21,28 @@ The app runs at [http://localhost:8080](http://localhost:8080).
 ### Local development (recommended)
 
 ```shell
+cp .env.example .env
 docker compose --profile dev up
 ```
 
-This starts PostgreSQL + the app in Docker with hot-reload. The app is available at http://localhost:8080.
+This starts PostgreSQL + the app in Docker with hot-reload. The app is available at http://localhost:8080. No `--build` needed — the dev profile mounts your source code as a volume.
 
 ## Project Structure
 
 ```
 src/main/java/com/valhalla/
-├── config/           # Spring configuration
-├── domain/           # Business logic (services, models, exceptions)
-├── infrastructure/   # Persistence (Spring Data JPA repositories)
-└── presentation/     # MVC controllers, DTOs, session interceptor, exception handling
+├── config/                 # Spring configuration (JPA, MVC, security, validation)
+├── domain/                 # Business logic (services, models, exceptions)
+│   ├── exception/          # Custom domain exceptions
+│   ├── login/              # Login service interface + implementation
+│   └── user/               # User entity
+├── infrastructure/         # Persistence (Spring Data JPA repositories)
+│   └── user/               # UserRepository
+├── presentation/           # MVC controllers, DTOs, session interceptor
+│   ├── login/              # Login controller + DTOs
+│   ├── shared/             # Cross-cutting: GlobalExceptionHandler, SessionInterceptor, UserSession
+│   └── user/               # User controller + DTOs
+└── MyServletInitializer.java  # Bootstrap for external servlet containers
 
 src/main/webapp/
 ├── WEB-INF/templates/

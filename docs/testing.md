@@ -17,6 +17,68 @@ What to test at each layer, how to write tests, and the testing conventions used
         └─────────┘
 ```
 
+## Test Structure
+
+Tests live under `src/test/java/com/valhalla/` and mirror the main source layout:
+
+```
+src/test/java/com/valhalla/
+├── config/                         # Test-specific Spring configs
+├── domain/                         # Unit tests for services
+│   ├── login/LoginServiceTest.java
+│   └── user/UserServiceTest.java
+├── e2e/                            # Playwright E2E tests (real browser)
+│   └── LoginViewE2E.java
+├── infrastructure/                 # Repository tests
+│   └── user/UserRepositoryTest.java
+├── integration/                    # MockMvc integration tests
+│   ├── WebIntegrationTest.java     # Composed annotation (see below)
+│   ├── LoginControllerTest.java
+│   ├── UserControllerTest.java
+│   └── JpaIntegrationTest.java
+└── presentation/                   # Pure Mockito unit tests
+    ├── login/LoginControllerTest.java
+    └── shared/GlobalExceptionHandlerTest.java
+```
+
+**Rule:** put tests in the directory that matches what you're testing. Services go in `domain/`, controllers in `presentation/` (unit) or `integration/` (MockMvc).
+
+## `@WebIntegrationTest` — Composed Annotation
+
+A custom composed annotation that bundles the boilerplate for MockMvc integration tests:
+
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(SpringExtension.class)     // JUnit 5 + Spring
+@WebAppConfiguration                    // simulate a web context
+@ContextConfiguration(classes = {
+  SpringWebTestConfig.class,            // MVC + Thymeleaf
+  JpaTestConfig.class                   // HSQLDB in-memory
+})
+public @interface WebIntegrationTest {}
+```
+
+**Usage:**
+
+```java
+@WebIntegrationTest
+public class LoginControllerTest {
+
+  @Autowired private WebApplicationContext wac;
+  @Autowired private LoginService loginService;
+  private MockMvc mockMvc;
+
+  @BeforeEach
+  public void setUp() {
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+  }
+  // ...
+}
+```
+
+No need to repeat `@ExtendWith`, `@WebAppConfiguration`, or `@ContextConfiguration` on every test class — just annotate with `@WebIntegrationTest`.
+
 ## Unit Tests (`presentation/`)
 
 Pure Mockito tests. No Spring context. Fast.

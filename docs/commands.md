@@ -44,6 +44,18 @@ mvn clean package
 mvn test
 ```
 
+### Development server
+
+```shell
+# Start Jetty with hot-reload (template + JS changes auto-refresh)
+mvn jetty:run
+
+# Full rebuild + start
+mvn clean jetty:run
+```
+
+Jetty runs at [http://localhost:8080](http://localhost:8080). Java changes require a restart; template and vendored JS changes reload live.
+
 ## Docker
 
 ### Local development (recommended)
@@ -103,4 +115,33 @@ mvn test -Dtest="LoginViewE2E"
 
 # Run a specific E2E test
 mvn test -Dtest="LoginViewE2E#shouldNavigateToHomeWhenUserExists"
+```
+
+## CI/CD (GitHub Actions)
+
+The pipeline runs on every push and PR to `main`. It has two jobs:
+
+### `backend` — build + test + quality gates
+
+Runs `mvn clean verify --fail-at-end` which triggers:
+1. Prettier formatting (auto-fix)
+2. Checkstyle (naming, Javadoc, imports)
+3. PMD + CPD (logic issues, duplication)
+4. Unit + integration tests (HSQLDB)
+5. JaCoCo coverage check (80% floor, 100% for domain/presentation)
+
+If any gate fails, the build fails.
+
+### `e2e` — Playwright against a real stack
+
+1. Spins up a PostgreSQL service container
+2. Installs Playwright's Chromium
+3. Packages the app (`mvn package -DskipTests`)
+4. Starts Jetty against the local Postgres
+5. Runs E2E tests (`LoginViewE2E`, `UserViewABME2E`) with quality gates skipped
+
+**To run the full pipeline locally before pushing:**
+
+```shell
+mvn clean verify
 ```

@@ -54,18 +54,19 @@ The presentation layer handles HTTP requests and responses. It translates betwee
 
 | File | Purpose |
 | :--- | :--- |
-| `LoginController.java` | Handles `/login`, `/validate-login`, `/register`, `/home`, `/logout` |
-| `LoginRequest.java` | DTO for login form data (with validation annotations) |
-| `NewUserRequest.java` | DTO for registration form data (with validation annotations) |
-| `UserSession.java` | DTO stored in HTTP session (email + role) |
-| `SessionInterceptor.java` | Guards `/home` — redirects to `/login` if no session |
-| `GlobalExceptionHandler.java` | `@ControllerAdvice` — handles exceptions globally |
+| `login/LoginController.java` | Handles `/login`, `/validate-login`, `/register`, `/home`, `/logout` |
+| `login/LoginRequest.java` | DTO for login form data (with validation annotations) |
+| `shared/NewUserRequest.java` | DTO for registration form data (with validation annotations) |
+| `shared/UserSession.java` | DTO stored in HTTP session (email + role) |
+| `shared/SessionInterceptor.java` | Guards `/home`, `/users` — redirects to `/login` if no session |
+| `shared/GlobalExceptionHandler.java` | `@ControllerAdvice` — handles exceptions globally |
 
 **Rules:**
 - Controllers return `ModelAndView` (view name + model data)
 - Use `@Valid` + `BindingResult` for form validation
 - Never put business logic in controllers — delegate to services
 - Use DTOs for form data, never pass entities to templates
+- Cross-cutting concerns (interceptors, exception handling, shared DTOs) go in `shared/`
 
 ### `infrastructure/` — Data Access
 
@@ -79,6 +80,26 @@ The persistence layer handles database access via Spring Data JPA.
 - Repositories extend `JpaRepository<Entity, IdType>`
 - No business logic in repositories — only queries
 - Domain exceptions propagate up, repository exceptions are caught by `GlobalExceptionHandler`
+
+### `config/` — Spring Configuration
+
+Wires all the framework pieces together. These classes are loaded by `MyServletInitializer` at startup.
+
+| File | Purpose |
+| :--- | :--- |
+| `SpringWebConfig.java` | MVC config — extends `BaseWebConfig` for production |
+| `BaseWebConfig.java` | Shared MVC base — Thymeleaf view resolver, interceptors, resource handlers |
+| `JpaConfig.java` | JPA / DataSource config — connects to PostgreSQL |
+| `DatabaseInitializationConfig.java` | Schema initialization (DDL) |
+| `EnvironmentConfig.java` | Reads `DB_HOST`, `DB_PORT`, etc. from env vars with defaults |
+| `SecurityConfig.java` | `PasswordEncoder` bean (BCrypt) |
+| `ValidationConfig.java` | Bean Validation (`LocalValidatorFactoryBean`) |
+| `DevReloadController.java` | Dev-only endpoint — returns a token that changes when templates change |
+| `DevReloadInterceptor.java` | Dev-only interceptor — adds reload headers to every response |
+
+### `MyServletInitializer.java` — Bootstrap
+
+Extends `AbstractAnnotationConfigDispatcherServletInitializer` — this is the entry point for deploying the WAR to an external servlet container (Jetty via `mvn jetty:run`, Tomcat, etc.). It registers `SpringWebConfig`, `JpaConfig`, and `DatabaseInitializationConfig` as the servlet context.
 
 ## Request Flow
 
@@ -172,3 +193,33 @@ public class GlobalExceptionHandler {
   }
 }
 ```
+
+### Password Hashing (BCrypt)
+
+Passwords are never stored in plain text. `SecurityConfig` registers a `BCryptPasswordEncoder` bean:
+
+```java
+@Configuration
+public class SecurityConfig {
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+}
+```
+
+Services inject `PasswordEncoder` and use it to hash on registration and verify on login:
+
+```java
+// Registration — hash before saving
+String hashed = passwordEncoder.encode(rawPassword);
+user.setPassword(hashed);
+
+// Login — compare raw input against stored hash
+if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+  throw new InvalidCredentials();
+}
+```
+
+**Rule:** never store plain passwords. Always go through the `PasswordEncoder` bean.

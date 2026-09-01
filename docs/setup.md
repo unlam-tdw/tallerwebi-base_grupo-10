@@ -48,3 +48,27 @@ Docker is a container platform that packages applications together with all thei
 
 - **Windows**: install `Docker Desktop`. Follow this [guide](https://docs.docker.com/desktop/setup/install/windows-install/).
 - **Linux**: install `Docker Engine` by following this [guide](https://docs.docker.com/engine/install/ubuntu/). You can also install `Docker Desktop` (it includes Docker Engine).
+
+## Environment Variables
+
+The app connects to PostgreSQL via environment variables. Copy `.env.example` to `.env` and fill in the values:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_NAME` | Database name | `valhalla` |
+| `DB_USER` | Database user | `user` |
+| `DB_PASSWORD` | Database password | `user` |
+| `POSTGRES_DB` | Initial DB created by the Postgres container | `valhalla` |
+| `POSTGRES_USER` | Initial superuser created by the Postgres container | `user` |
+| `POSTGRES_PASSWORD` | Initial superuser password | `user` |
+
+`DB_*` variables are read by the Java app at runtime. `POSTGRES_*` variables are only used by the Postgres Docker container on first boot.
+
+```shell
+cp .env.example .env
+# Edit .env with your values
+```
+
+**Tip:** the defaults work out of the box — you only need to edit `.env` if you want custom credentials.
