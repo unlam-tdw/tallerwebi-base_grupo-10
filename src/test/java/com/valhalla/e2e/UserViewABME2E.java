@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import com.microsoft.playwright.*;
+import com.valhalla.e2e.views.LoginPage;
 import com.valhalla.e2e.views.UserFormPage;
 import com.valhalla.e2e.views.UsersPage;
 import java.net.MalformedURLException;
@@ -107,11 +108,11 @@ public class UserViewABME2E {
   // --- given ---
 
   private void loginAsAdmin(Page page) {
-    page.navigate("localhost:8080/login");
-    page.fill("#email", "test@unlam.edu.ar");
-    page.fill("#password", "test");
-    page.click("#btn-login");
-    page.waitForURL(".*\\/home.*");
+    LoginPage loginPage = new LoginPage(page);
+    loginPage.typeEmail("test@unlam.edu.ar");
+    loginPage.typePassword("test");
+    loginPage.clickSignIn();
+    loginPage.waitForPath("/home");
   }
 
   private void givenAdminIsOnUsersPage() throws MalformedURLException {
