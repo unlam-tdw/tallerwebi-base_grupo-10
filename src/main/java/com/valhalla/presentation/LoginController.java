@@ -2,6 +2,7 @@ package com.valhalla.presentation;
 
 import com.valhalla.domain.LoginService;
 import com.valhalla.domain.User;
+import com.valhalla.domain.exception.UserAlreadyExists;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -68,8 +69,12 @@ public class LoginController {
     if (bindingResult.hasErrors()) {
       return renderNewUserWithError(newUserData);
     }
-    loginService.register(newUserData.getEmail(), newUserData.getPassword());
-    return new ModelAndView(REDIRECT_LOGIN);
+    try {
+      loginService.register(newUserData.getEmail(), newUserData.getPassword());
+      return new ModelAndView(REDIRECT_LOGIN);
+    } catch (UserAlreadyExists e) {
+      return renderNewUserWithError(newUserData, "Email is already registered");
+    }
   }
 
   @RequestMapping(path = "/new-user", method = RequestMethod.GET)
@@ -115,9 +120,13 @@ public class LoginController {
   }
 
   private ModelAndView renderNewUserWithError(NewUserRequest newUserData) {
+    return renderNewUserWithError(newUserData, "Invalid registration data");
+  }
+
+  private ModelAndView renderNewUserWithError(NewUserRequest newUserData, String message) {
     Map<String, Object> model = new ModelMap();
     model.put(ATTR_NEW_USER_DATA, newUserData);
-    model.put("error", "Invalid registration data");
+    model.put("error", message);
     return new ModelAndView(VIEW_NEW_USER, model);
   }
 }

@@ -1,6 +1,7 @@
 package com.valhalla.presentation;
 
 import com.valhalla.domain.exception.UserAlreadyExists;
+import com.valhalla.domain.exception.UserNotFoundException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,9 +18,17 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(UserAlreadyExists.class)
   public ModelAndView handleUserAlreadyExists() {
     Map<String, Object> model = new ModelMap();
-    model.put("newUserData", new NewUserRequest());
+    model.put("userForm", new EditUserRequest());
+    model.put("isEdit", false);
     model.put("error", "Email is already registered");
-    return new ModelAndView("pages/auth/new-user", model);
+    return new ModelAndView("pages/admin/user-form", model);
+  }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public ModelAndView handleUserNotFound() {
+    Map<String, Object> model = new ModelMap();
+    model.put("error", "User not found");
+    return new ModelAndView("redirect:/users", model);
   }
 
   @ExceptionHandler(Exception.class)

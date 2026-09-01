@@ -1,0 +1,139 @@
+package com.valhalla.presentation;
+
+import com.valhalla.domain.User;
+import com.valhalla.domain.UserService;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/users")
+public class UserController {
+
+  private static final String VIEW_USERS = "pages/admin/users";
+  private static final String VIEW_USER_FORM = "pages/admin/user-form";
+  private static final String REDIRECT_USERS = "redirect:/users";
+  private static final String ATTR_USERS = "users";
+  private static final String ATTR_USER_FORM = "userForm";
+  private static final String ATTR_USER_ID = "userId";
+  private static final String ATTR_IS_EDIT = "isEdit";
+  private static final String ATTR_USER = "user";
+  private static final String ATTR_GENERATED_PASSWORD = "generatedPassword";
+
+  private final UserService userService;
+
+  @Autowired
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
+
+  @GetMapping
+  public ModelAndView listUsers(HttpSession session) {
+    UserSession currentUser = (UserSession) session.getAttribute(SessionInterceptor.USER_SESSION);
+    Map<String, Object> model = new ModelMap();
+    model.put(ATTR_USERS, userService.findAll());
+    model.put(ATTR_USER, currentUser);
+    return new ModelAndView(VIEW_USERS, model);
+  }
+
+  @GetMapping("/new")
+  public ModelAndView showNewUserForm() {
+    Map<String, Object> model = new ModelMap();
+    model.put(ATTR_USER_FORM, new EditUserRequest());
+    model.put(ATTR_IS_EDIT, false);
+    return new ModelAndView(VIEW_USER_FORM, model);
+  }
+
+  @PostMapping
+  public ModelAndView createUser(
+    @Valid @ModelAttribute(ATTR_USER_FORM) EditUserRequest userForm,
+    BindingResult bindingResult,
+    RedirectAttributes redirectAttributes
+  ) {
+    if (bindingResult.hasErrors()) {
+      return renderFormWithError(userForm, false);
+    }
+    String password = userService.generatePassword();
+    userService.create(userForm.getEmail(), password, userForm.getRole());
+    redirectAttributes.addFlashAttribute(ATTR_GENERATED_PASSWORD, password);
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  @GetMapping("/{id}/edit")
+  public ModelAndView showEditUserForm(@PathVariable Long id) {
+    User user = userService.findById(id);
+    Map<String, Object> model = new ModelMap();
+    model.put(ATTR_USER_FORM, new EditUserRequest(user.getEmail(), user.getRole()));
+    model.put(ATTR_USER_ID, id);
+    model.put(ATTR_IS_EDIT, true);
+    return new ModelAndView(VIEW_USER_FORM, model);
+  }
+
+  @RequestMapping(value = "/{id}", method = { RequestMethod.POST, RequestMethod.PUT })
+  public ModelAndView updateUser(
+    @PathVariable Long id,
+    @Valid @ModelAttribute(ATTR_USER_FORM) EditUserRequest userForm,
+    BindingResult bindingResult
+  ) {
+    if (bindingResult.hasErrors()) {
+      return renderFormWithError(userForm, true, id);
+    }
+    userService.update(id, userForm.getEmail(), userForm.getRole());
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  @RequestMapping(value = "/{id}/deactivate", method = { RequestMethod.POST, RequestMethod.PUT })
+  public ModelAndView deactivateUser(@PathVariable Long id) {
+    userService.deactivate(id);
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  @RequestMapping(value = "/{id}/activate", method = { RequestMethod.POST, RequestMethod.PUT })
+  public ModelAndView activateUser(@PathVariable Long id) {
+    userService.activate(id);
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  @RequestMapping(
+    value = "/{id}/rotate-password",
+    method = { RequestMethod.POST, RequestMethod.PUT }
+  )
+  public ModelAndView rotatePassword(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    String newPassword = userService.rotatePassword(id);
+    redirectAttributes.addFlashAttribute(ATTR_GENERATED_PASSWORD, newPassword);
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  @RequestMapping(value = "/{id}/delete", method = { RequestMethod.POST, RequestMethod.DELETE })
+  public ModelAndView deleteUser(@PathVariable Long id) {
+    userService.delete(id);
+    return new ModelAndView(REDIRECT_USERS);
+  }
+
+  private ModelAndView renderFormWithError(EditUserRequest form, boolean isEdit) {
+    return renderFormWithError(form, isEdit, null);
+  }
+
+  private ModelAndView renderFormWithError(EditUserRequest form, boolean isEdit, Long id) {
+    Map<String, Object> model = new ModelMap();
+    model.put(ATTR_USER_FORM, form);
+    model.put(ATTR_IS_EDIT, isEdit);
+    if (id != null) {
+      model.put(ATTR_USER_ID, id);
+    }
+    model.put("error", "Invalid user data");
+    return new ModelAndView(VIEW_USER_FORM, model);
+  }
+}

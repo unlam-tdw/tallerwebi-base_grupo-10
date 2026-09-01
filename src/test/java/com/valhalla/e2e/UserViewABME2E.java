@@ -1,0 +1,175 @@
+package com.valhalla.e2e;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+
+import com.microsoft.playwright.*;
+import com.valhalla.e2e.views.UserFormPage;
+import com.valhalla.e2e.views.UsersPage;
+import java.net.MalformedURLException;
+import java.net.URL;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class UserViewABME2E {
+
+  static Playwright playwright;
+  static Browser browser;
+  BrowserContext context;
+  UsersPage usersPage;
+
+  @BeforeAll
+  static void openBrowser() {
+    playwright = Playwright.create();
+    browser = playwright.chromium().launch();
+  }
+
+  @AfterAll
+  static void closeBrowser() {
+    playwright.close();
+  }
+
+  @BeforeEach
+  void createContextAndPage() {
+    ResetDatabase.cleanDatabase();
+
+    context = browser.newContext();
+    Page page = context.newPage();
+    usersPage = new UsersPage(page);
+  }
+
+  @AfterEach
+  void closeContext() {
+    context.close();
+  }
+
+  @Test
+  void shouldListExistingAdminUser() throws MalformedURLException {
+    givenAdminIsOnUsersPage();
+    thenShouldSeeHeading("Users");
+    thenShouldSeeAtLeastOneUser();
+    thenShouldSeeRowWithEmail("test@unlam.edu.ar");
+  }
+
+  @Test
+  void shouldCreateNewUserAndSeeItInTheList() throws MalformedURLException {
+    givenAdminIsOnUsersPage();
+    whenAdminClicksNewUser();
+    thenShouldSeeHeading("New User");
+    whenAdminFillsForm("newe2e@unlam.edu.ar", "USER");
+    whenAdminClicksCreate();
+    thenShouldBeRedirectedToUsersList();
+    thenShouldSeeRowWithEmail("newe2e@unlam.edu.ar");
+  }
+
+  @Test
+  void shouldEditExistingUser() throws MalformedURLException {
+    givenAdminIsOnUsersPage();
+    whenAdminClicksNewUser();
+    whenAdminFillsForm("editable@unlam.edu.ar", "USER");
+    whenAdminClicksCreate();
+    thenShouldBeRedirectedToUsersList();
+
+    whenAdminClicksEditOnRow("editable@unlam.edu.ar");
+    thenShouldSeeHeading("Edit User");
+    whenAdminFillsForm("edited@unlam.edu.ar", "ADMIN");
+    whenAdminClicksUpdate();
+    thenShouldBeRedirectedToUsersList();
+    thenShouldSeeRowWithEmail("edited@unlam.edu.ar");
+  }
+
+  @Test
+  void shouldDeactivateAndThenDeleteUser() throws MalformedURLException {
+    givenAdminIsOnUsersPage();
+    whenAdminClicksNewUser();
+    whenAdminFillsForm("deactivatable@unlam.edu.ar", "USER");
+    whenAdminClicksCreate();
+    thenShouldBeRedirectedToUsersList();
+    thenShouldSeeRowWithEmail("deactivatable@unlam.edu.ar");
+
+    whenAdminClicksDeactivateOnRow("deactivatable@unlam.edu.ar");
+    thenShouldBeRedirectedToUsersList();
+    thenShouldSeeInactiveOnRow("deactivatable@unlam.edu.ar");
+
+    whenAdminClicksDeleteOnRow("deactivatable@unlam.edu.ar");
+    thenShouldBeRedirectedToUsersList();
+    thenShouldNotSeeRowWithEmail("deactivatable@unlam.edu.ar");
+  }
+
+  // --- given ---
+
+  private void givenAdminIsOnUsersPage() throws MalformedURLException {
+    usersPage.waitForPath("/users");
+    URL url = usersPage.getCurrentUrl();
+    assertThat(url.getPath(), matchesPattern("^/users(?:;jsessionid=[^/\\s]+)?$"));
+  }
+
+  // --- when ---
+
+  private void whenAdminClicksNewUser() {
+    usersPage.clickNewUser();
+  }
+
+  private void whenAdminClicksEditOnRow(String email) {
+    usersPage.clickEditOnRow(email);
+  }
+
+  private void whenAdminClicksDeactivateOnRow(String email) {
+    usersPage.clickDeactivateOnRow(email);
+  }
+
+  private void whenAdminClicksDeleteOnRow(String email) {
+    usersPage.clickDeleteOnRow(email);
+  }
+
+  private void whenAdminFillsForm(String email, String role) {
+    UserFormPage formPage = new UserFormPage(context.pages().get(0));
+    formPage.typeEmail(email);
+    formPage.selectRole(role);
+  }
+
+  private void whenAdminClicksCreate() {
+    UserFormPage formPage = new UserFormPage(context.pages().get(0));
+    formPage.clickCreate();
+  }
+
+  private void whenAdminClicksUpdate() {
+    UserFormPage formPage = new UserFormPage(context.pages().get(0));
+    formPage.clickCreate();
+  }
+
+  // --- then ---
+
+  private void thenShouldSeeHeading(String expected) {
+    String heading = usersPage.getHeading();
+    assertThat(heading, equalToIgnoringCase(expected));
+  }
+
+  private void thenShouldSeeAtLeastOneUser() {
+    assertThat(usersPage.getUserCount(), is(greaterThan(0)));
+  }
+
+  private void thenShouldSeeRowWithEmail(String email) {
+    usersPage.waitForPath("/users");
+    assertThat(usersPage.hasRowWithEmail(email), is(true));
+  }
+
+  private void thenShouldNotSeeRowWithEmail(String email) {
+    usersPage.waitForPath("/users");
+    assertThat(usersPage.hasRowWithEmail(email), is(false));
+  }
+
+  private void thenShouldBeRedirectedToUsersList() {
+    usersPage.waitForPath("/users");
+  }
+
+  private void thenShouldSeeInactiveOnRow(String email) {
+    usersPage.waitForDeactivated(email);
+  }
+}

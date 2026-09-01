@@ -151,6 +151,7 @@
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
+                        <arg>-parameters</arg>
                         <arg>-Xlint:all</arg>
                         <arg>-Xmaxwarns</arg>
                         <arg>1000</arg>

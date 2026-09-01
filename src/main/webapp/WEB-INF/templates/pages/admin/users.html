@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head('Users')}"></head>
+
+<body th:replace="~{layouts/base :: layout(~{::main})}">
+
+  <main class="flex-1 p-4">
+    <div id="users-app" class="mx-auto max-w-4xl">
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-gray-900">Users</h2>
+        <a th:href="@{/users/new}"
+          class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700">
+          + New User
+        </a>
+      </div>
+
+      <div th:if="${generatedPassword}" class="mb-4 rounded-md bg-green-100 p-4 text-sm text-green-800">
+        <p class="font-semibold">Password generated (shown only once):</p>
+        <code th:text="${generatedPassword}"
+          class="mt-1 inline-block rounded bg-green-200 px-2 py-1 font-mono text-green-900">password</code>
+        <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)"
+          class="ml-2 rounded bg-green-200 px-2 py-1 text-xs font-medium text-green-700 hover:bg-green-300">
+          Copy
+        </button>
+      </div>
+
+      <p v-if="error" class="mb-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{{ error }}</p>
+
+      <table class="w-full border-collapse bg-white shadow-md">
+        <thead>
+          <tr class="border-b border-gray-200 bg-gray-50 text-left text-sm font-medium text-gray-600">
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3">Role</th>
+            <th class="px-4 py-3">Active</th>
+            <th class="px-4 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="u : ${users}" class="border-b border-gray-100 hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm text-gray-900" th:text="${u.email}">email</td>
+            <td class="px-4 py-3 text-sm text-gray-700" th:text="${u.role}">role</td>
+            <td class="px-4 py-3 text-sm">
+              <span th:if="${u.active}" class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Active</span>
+              <span th:unless="${u.active}" class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Inactive</span>
+            </td>
+            <td class="flex justify-end gap-2 px-4 py-3">
+              <a th:href="@{/users/{id}/edit(id=${u.id})}"
+                class="rounded bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 transition hover:bg-gray-300">
+                Edit
+              </a>
+              <form th:action="@{/users/{id}/rotate-password(id=${u.id})}" method="POST"
+                th:if="${u.email != user.email}">
+                <input type="hidden" name="_method" value="PUT" />
+                <button type="submit"
+                  class="rounded bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-blue-200">
+                  Rotate Password
+                </button>
+              </form>
+              <form th:action="@{/users/{id}/deactivate(id=${u.id})}" method="POST"
+                th:if="${u.active and u.email != user.email}">
+                <input type="hidden" name="_method" value="PUT" />
+                <button type="submit"
+                  class="rounded bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700 transition hover:bg-yellow-200">
+                  Deactivate
+                </button>
+              </form>
+              <form th:action="@{/users/{id}/activate(id=${u.id})}" method="POST"
+                th:if="${!u.active and u.email != user.email}">
+                <input type="hidden" name="_method" value="PUT" />
+                <button type="submit"
+                  class="rounded bg-green-100 px-3 py-1 text-sm font-medium text-green-700 transition hover:bg-green-200">
+                  Activate
+                </button>
+              </form>
+              <form th:action="@{/users/{id}/delete(id=${u.id})}" method="POST"
+                th:if="${u.email != user.email}">
+                <input type="hidden" name="_method" value="DELETE" />
+                <button type="submit"
+                  class="rounded bg-red-100 px-3 py-1 text-sm font-medium text-red-700 transition hover:bg-red-200">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p th:if="${#lists.isEmpty(users)}" class="mt-8 text-center text-gray-500">No users found.</p>
+    </div>
+
+    <script>
+      Vue.createApp({
+        data() {
+          return {
+            error: '[[${error}]]'
+          }
+        }
+      }).mount('#users-app');
+    </script>
+  </main>
+
+</body>
+
+</html>

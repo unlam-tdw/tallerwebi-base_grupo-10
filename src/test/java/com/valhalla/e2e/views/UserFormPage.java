@@ -1,0 +1,30 @@
+package com.valhalla.e2e.views;
+
+import com.microsoft.playwright.Page;
+
+public class UserFormPage extends WebPage {
+
+  public UserFormPage(Page page) {
+    super(page);
+  }
+
+  public String getHeading() {
+    return this.getElementText("h3");
+  }
+
+  public void typeEmail(String email) {
+    this.typeIntoElement("#email", email);
+  }
+
+  public void selectRole(String role) {
+    this.page.selectOption("#role", role);
+  }
+
+  public void clickCreate() {
+    this.clickElement("button[type='submit']");
+  }
+
+  public void clickCancel() {
+    this.clickElement("a:has-text('Cancel')");
+  }
+}

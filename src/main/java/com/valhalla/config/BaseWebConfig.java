@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -45,12 +46,19 @@ public abstract class BaseWebConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new SessionInterceptor()).addPathPatterns("/home");
+    registry
+      .addInterceptor(new SessionInterceptor())
+      .addPathPatterns("/home", "/users", "/users/**");
     if (isLiveReload()) {
       registry
         .addInterceptor(new DevReloadInterceptor(devReloadController()))
         .addPathPatterns("/**");
     }
+  }
+
+  @Bean
+  public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+    return new HiddenHttpMethodFilter();
   }
 
   @Bean

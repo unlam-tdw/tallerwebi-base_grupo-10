@@ -19,14 +19,15 @@ public class GlobalExceptionHandlerTest {
   }
 
   @Test
-  public void shouldReRenderRegistrationFormWithErrorWhenEmailAlreadyExists() {
+  public void shouldReRenderUserFormWithErrorWhenEmailAlreadyExists() {
     ModelAndView modelAndView = handler.handleUserAlreadyExists();
-    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/new-user"));
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/admin/user-form"));
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("Email is already registered")
     );
-    assertThat(modelAndView.getModel().get("newUserData"), instanceOf(NewUserRequest.class));
+    assertThat(modelAndView.getModel().get("userForm"), instanceOf(EditUserRequest.class));
+    assertThat(modelAndView.getModel().get("isEdit"), instanceOf(Boolean.class));
   }
 
   @Test
@@ -36,6 +37,16 @@ public class GlobalExceptionHandlerTest {
     assertThat(
       modelAndView.getModel().get("error").toString(),
       equalToIgnoringCase("An unexpected error occurred")
+    );
+  }
+
+  @Test
+  public void shouldRedirectToUsersWithErrorWhenUserNotFound() {
+    ModelAndView modelAndView = handler.handleUserNotFound();
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/users"));
+    assertThat(
+      modelAndView.getModel().get("error").toString(),
+      equalToIgnoringCase("User not found")
     );
   }
 }

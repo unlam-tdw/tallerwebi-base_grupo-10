@@ -128,13 +128,18 @@ public class LoginControllerTest {
   }
 
   @Test
-  public void shouldPropagateExceptionWhenEmailAlreadyExists() {
+  public void shouldReturnNewUserFormWithErrorWhenEmailAlreadyExists() {
     doThrow(UserAlreadyExists.class).when(loginServiceMock).register(anyString(), anyString());
     BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(
       newUserData,
       "newUserData"
     );
-    assertThrows(UserAlreadyExists.class, () -> controller.register(newUserData, bindingResult));
+    ModelAndView modelAndView = controller.register(newUserData, bindingResult);
+    assertThat(modelAndView.getViewName(), equalToIgnoringCase("pages/auth/new-user"));
+    assertThat(
+      modelAndView.getModel().get("error").toString(),
+      equalToIgnoringCase("Email is already registered")
+    );
   }
 
   @Test

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/base :: head(${isEdit} ? 'Edit User' : 'New User')}"></head>
+
+<body th:replace="~{layouts/base :: layout(~{::main})}">
+
+  <main class="flex-1 flex items-center justify-center p-4">
+    <div id="user-form-app" class="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+      <h3 class="mb-2 text-2xl font-semibold text-gray-900"
+        th:text="${isEdit} ? 'Edit User' : 'New User'">Form Title</h3>
+      <hr class="mb-6 border-gray-200">
+
+      <form ref="form" @submit.prevent="submit"
+        th:action="${isEdit} ? @{/users/{id}(id=${userId})} : @{/users}"
+        th:method="${isEdit} ? 'POST' : 'POST'">
+        <input th:if="${isEdit}" type="hidden" name="_method" value="PUT" />
+
+        <div>
+          <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Email</label>
+          <input v-model="email" id="email" name="email" type="email" required
+            class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none" />
+        </div>
+
+        <div class="mt-4">
+          <label for="role" class="mb-1 block text-sm font-medium text-gray-700">Role</label>
+          <select v-model="role" id="role" name="role"
+            class="mb-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button type="submit" :disabled="loading"
+            class="flex-1 rounded-md bg-blue-600 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+            <span v-if="loading">Saving...</span>
+            <span v-else th:text="${isEdit} ? 'Update' : 'Create'">Save</span>
+          </button>
+          <a th:href="@{/users}"
+            class="flex-1 rounded-md bg-gray-200 py-2 text-center font-medium text-gray-700 transition hover:bg-gray-300">
+            Cancel
+          </a>
+        </div>
+
+        <p v-if="error" class="alert alert-danger my-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">{{ error }}</p>
+      </form>
+    </div>
+
+    <script>
+      Vue.createApp({
+        data() {
+          return {
+            email: '[[${userForm.email}]]',
+            role: '[[${userForm.role}]]',
+            error: '[[${error}]]',
+            loading: false
+          }
+        },
+        methods: {
+          submit() {
+            this.loading = true;
+            this.$refs.form.submit();
+          }
+        }
+      }).mount('#user-form-app');
+    </script>
+  </main>
+
+</body>
+
+</html>
