@@ -159,8 +159,9 @@ public class UserViewABME2E {
 
   private void thenShouldSeeHeading(String expected) throws MalformedURLException {
     String heading;
-    if (usersPage.getCurrentUrl().getPath().contains("/users/new") ||
-        usersPage.getCurrentUrl().getPath().matches(".*/users/\\d+")) {
+    String path = usersPage.getCurrentUrl().getPath();
+    boolean onFormPage = path.contains("/users/new") || path.matches(".*/users/\\d+/edit");
+    if (onFormPage) {
       heading = new UserFormPage(context.pages().get(0)).getHeading();
     } else {
       heading = usersPage.getHeading();
