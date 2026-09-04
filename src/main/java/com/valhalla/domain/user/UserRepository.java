@@ -1,14 +1,17 @@
-package com.valhalla.infrastructure.user;
+package com.valhalla.domain.user;
 
 import com.valhalla.domain.exception.UserNotFoundException;
-import com.valhalla.domain.user.User;
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository {
+  List<User> findAll();
+  Optional<User> findById(Long id);
   Optional<User> findByEmail(String email);
-
   boolean existsByEmail(String email);
+  boolean existsById(Long id);
+  void save(User user);
+  void deleteById(Long id);
 
   default void update(User user) {
     if (user.getId() == null) {

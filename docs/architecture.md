@@ -39,12 +39,16 @@ The domain layer contains the core business rules. It has no knowledge of HTTP, 
 | File | Purpose |
 | :--- | :--- |
 | `User.java` | JPA entity — maps to the `users` table |
+| `UserService.java` | Interface — defines what the service can do |
+| `UserServiceImpl.java` | Implementation — contains the actual business logic |
+| `UserRepository.java` | Interface — contract for data access (implemented in infrastructure) |
 | `LoginService.java` | Interface — defines what the service can do |
 | `LoginServiceImpl.java` | Implementation — contains the actual business logic |
 | `exception/` | Custom exceptions for domain errors |
 
 **Rules:**
 - Services are defined as interfaces, implemented as `@Service` classes
+- Repository interfaces live in domain; implementations live in infrastructure
 - Business exceptions extend `RuntimeException`
 - Entities use JPA annotations but no Spring MVC annotations
 
@@ -70,14 +74,17 @@ The presentation layer handles HTTP requests and responses. It translates betwee
 
 ### `infrastructure/` — Data Access
 
-The persistence layer handles database access via Spring Data JPA.
+The persistence layer handles database access via Spring Data JPA. It implements the repository interfaces defined in domain.
 
 | File | Purpose |
 | :--- | :--- |
-| `UserRepository.java` | Spring Data interface — `findByEmail()`, etc. |
+| `JpaUserRepository.java` | Spring Data interface — extends `JpaRepository`, declares `findByEmail()`, etc. |
+| `UserRepositoryImpl.java` | Delegates to `JpaUserRepository` — implements `domain.user.UserRepository` |
 
 **Rules:**
-- Repositories extend `JpaRepository<Entity, IdType>`
+- Repository interfaces are defined in `domain/`; implementations live here
+- `JpaUserRepository` extends `JpaRepository` and is auto-detected by Spring Data
+- `UserRepositoryImpl` is a `@Repository` class that delegates to `JpaUserRepository`
 - No business logic in repositories — only queries
 - Domain exceptions propagate up, repository exceptions are caught by `GlobalExceptionHandler`
 
@@ -114,7 +121,7 @@ Here's what happens when a user submits the login form:
        ↓ (if valid)
 4. LoginService.findUser(email, password)
        ↓
-5. UserRepository.findByEmail() — database query
+5. UserRepository.findByEmail() — domain interface → infrastructure implementation → database query
        ↓
 6. If user found → create UserSession → store in HttpSession → redirect /home
    If not found → return login view with error

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.valhalla.domain.exception.UserNotFoundException;
 import com.valhalla.domain.user.User;
+import com.valhalla.domain.user.UserRepository;
 import com.valhalla.integration.JpaIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

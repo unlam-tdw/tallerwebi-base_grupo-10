@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.valhalla.domain.login.LoginService;
-import com.valhalla.infrastructure.user.UserRepository;
+import com.valhalla.domain.user.UserRepository;
 import com.valhalla.presentation.shared.SessionInterceptor;
 import com.valhalla.presentation.shared.UserSession;
 import org.junit.jupiter.api.BeforeEach;
